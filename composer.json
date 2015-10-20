@@ -1,0 +1,28 @@
+{
+	"name": "tflanagan/quickbase",
+	"type": "library",
+	"version": "0.0.1",
+	"description": "A lightweight, very flexible QuickBase API",
+	"keywords": [
+		"QuickBase",
+		"quickbase",
+		"qb",
+		"api"
+	],
+	"homepage": "https://github.com/tflanagan/php-quickbase",
+	"support": {
+		"issues": "https://github.com/tflanagan/php-quickbase/issues"
+	},
+	"license": "Apache-2.0",
+	"authors": [
+		{
+			"name": "Tristian Flanagan",
+			"email": "tflanagan@datacollaborative.com",
+			"homepage": "https://github.com/tflanagan",
+			"role": "Developer"
+		}
+	],
+	"require": {
+		"php": ">=5.4.0"
+	}
+}
