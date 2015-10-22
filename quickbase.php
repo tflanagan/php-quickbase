@@ -15,19 +15,6 @@
  * limitations under the License.
 */
 
-/* Error Handling */
-class QuickBaseError extends Exception {
-
-	public function __construct($code = 0, $message = 'No error', $detail = ''){
-		parent::__construct($message.$detail, $code);
-	}
-
-	public function __toString(){
-		return __CLASS__.': ['.$this->code.'] '.$this->message;
-	}
-
-}
-
 class QuickBase {
 
 	private $defaults = array(
@@ -55,22 +42,40 @@ class QuickBase {
 			'errdetail' => ''
 		),
 
-		'maxErrorRetryAttempts': 3,
-		// 'connectionLimit' => 10,
-		// 'errorOnConnectionLimit' => false
+		'maxErrorRetryAttempts' => 3
 	);
 
-	public function __construct($options){
+	public function __construct($options = array()){
 		$this->settings = array_merge_recursive($this->defaults, $options);
 	}
 
-	public function api($action, $options){
-
+	public function api($action, $options = array()){
+		return new QuickBaseQuery($this, $action, $options);
 	}
 
-	/* Helpers */
-	protected function xml2js($xml){
-		$root = func_num_args() > 1 ? false : true;
+}
+
+class QuickBaseError extends Exception {
+
+	public function __construct($code = 0, $message = 'No error', $detail = ''){
+		parent::__construct($message.$detail, $code);
+	}
+
+	public function __toString(){
+		return __CLASS__.': ['.$this->code.'] '.$this->message;
+	}
+
+}
+
+class QuickBaseQuery {
+	
+	public function __construct($action, $options){
+		$this->packet = new SimpleXMLElement('<qdbapi></qdbapi>');
+	
+		return $this;
+	}
+
+	protected function xml2js($xml, $root = false){
 		$js = array();
 
 		if($root){
@@ -79,7 +84,7 @@ class QuickBase {
 
 			array_push($js[$nodeName], $this->xml2js($xml, true));
 
-			return $json_encode($js);
+			return json_encode($js);
 		}
 
 		if(count($xml->attributes()) > 0){
@@ -106,7 +111,7 @@ class QuickBase {
 			array_push($js[$childName], $this->xml2js($child, true));
 		}
 
-		return $js;
+		return json_encode($js);
 	}
 
 }

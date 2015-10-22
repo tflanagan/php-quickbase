@@ -15,6 +15,65 @@
  * limitations under the License.
 */
 
-require_once('../quickbase.php');
+/* Dependancies */
+require_once(__DIR__.'/../quickbase.php');
+
+/* Error Handling */
+set_error_handler(function($errno, $errstr, $errfile, $errline, $errcontext){
+	if(error_reporting() === 0){
+		return false;
+	}
+
+	throw new Exception($errstr, $errno);
+});
+
+/* Globals */
+$stderr = fopen('php://stderr', 'w+');
+$error = false;
+
+$qb = new QuickBase();
+
+/* Main */
+$files = array_diff(scandir(__DIR__), array(
+	'..',
+	'.',
+	'runAll.php',
+	'API_Authenticate.php'
+));
+
+array_unshift($files, 'API_Authenticate.php');
+
+foreach($files as $i => $file){
+	if(strpos($file, '.') === 0){
+		continue;
+	}
+
+	try {
+		echo "\nRunning Test ".$file.'... ';
+
+		include(__DIR__.'/'.$file);
+
+		echo 'Passed.';
+	}catch(Exception $e){
+		fwrite($stderr, implode('', array(
+			'Failed!',
+			"\n\nError: [".$e->getCode().'] ',
+			$e->getMessage(),
+			"\n".$e->getTraceAsString()
+		)));
+
+		$error = true;
+
+		break;
+	}
+}
+
+fclose($stderr);
+
+if($error){
+	echo "\n\nTesting Failed! Please see above for details.";
+}else{
+	echo "\n\nTesting Complete!";
+}
 
 ?>
