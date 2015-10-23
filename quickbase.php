@@ -128,7 +128,7 @@ class QuickBaseQuery {
 		$this->payload = '';
 
 		if($this->parent->settings['flags']['useXML']){
-			$xmlDoc = new \SimpleXMLElement(implode('', array(
+			$xmlDoc = new SimpleXMLElement(implode('', array(
 				'<?xml version="1.0" encoding="',
 				$this->options['encoding'],
 				'"?>',
@@ -215,7 +215,7 @@ class QuickBaseQuery {
 			throw new QuickBaseError(curl_errno($ch), curl_error($ch));
 		}
 
-		$this->xmlResponse = new \SimpleXmlIterator($response);
+		$this->xmlResponse = new SimpleXmlIterator($response);
 
 		return $this;
 	}
@@ -377,7 +377,7 @@ class QuickBaseRequest {
 		}
 
 		if(!isset($query->options['fmt']) && isset($query->parent->settings['flags']['fmt'])){
-			$query->options['returnPercentage'] = $query->parent->settings['flags']['fmt'];
+			$query->options['fmt'] = $query->parent->settings['flags']['fmt'];
 		}
 
 		if(!isset($query->options['includeRids']) && isset($query->parent->settings['flags']['includeRids'])){
