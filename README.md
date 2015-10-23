@@ -1,10 +1,59 @@
-UNDER CONSTRUCTION - DO NOT USE
-===============================
-
 php-quickbase
 =============
 
+[![License](https://poser.pugx.org/tflanagan/quickbase/license)](https://packagist.org/packages/tflanagan/quickbase) [![Latest Stable Version](https://poser.pugx.org/tflanagan/quickbase/version)](https://packagist.org/packages/tflanagan/quickbase) [![Total Downloads](https://poser.pugx.org/tflanagan/quickbase/downloads)](https://packagist.org/packages/tflanagan/quickbase) [![Build Status](https://travis-ci.org/tflanagan/php-quickbase.svg?branch=master)](https://travis-ci.org/tflanagan/php-quickbase)
+
 A lightweight, very flexible QuickBase API
+
+Install
+-------
+```
+$ composer require tflanagan/quickbase
+```
+
+Example
+-------
+```php
+
+try {
+	$qb = new QuickBase(array(
+		'realm' => 'www',
+		'appToken' => '****'
+	));
+
+	$qb->api('API_Authenticate', array(
+		'username' => getenv('username'),
+		'password' => getenv('password')
+	));
+
+	$response = $qb->api('API_DoQuery', array(
+		'dbid' => '*****',
+		'clist' => '3.12',
+		'options' => 'num-5'
+	));
+
+	foreach($response['table']['records'] as $record){
+		$qb->api('API_EditRecord', array(
+			'dbid' => '*****',
+			'rid' => $record[3],
+			'fields' => array(
+				array( 'fid' => 12, 'value' => $record[12])
+			)
+		));
+	}
+
+	$response = $qb->api('API_DoQuery', array(
+		'dbid' => '*****',
+		'clist' => '3.12',
+		'options' => 'num-5'
+	));
+
+	var_dump($response['table']['records']);
+}catch(Exception $err){
+	var_dump($err);
+}
+
+```
 
 License
 -------

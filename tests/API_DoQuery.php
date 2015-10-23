@@ -17,7 +17,8 @@
 
 $qb->api('API_DoQuery', array(
 	'dbid' => getenv('dbid'),
-	'query' => "{'3'.XEX.''}"
+	'query' => "{'3'.XEX.''}",
+	'clist' => '1.2.3.4.5'
 ));
 
 ?>
