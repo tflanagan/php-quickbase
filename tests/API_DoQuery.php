@@ -15,9 +15,9 @@
  * limitations under the License.
 */
 
-$qb->api('API_Authenticate', array(
-	'username' => getenv('username'),
-	'password' => getenv('password')
+$qb->api('API_DoQuery', array(
+	'dbid' => getenv('dbid'),
+	'query' => "{'3'.XEX.''}"
 ));
 
 ?>

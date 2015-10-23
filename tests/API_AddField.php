@@ -15,9 +15,15 @@
  * limitations under the License.
 */
 
-$qb->api('API_Authenticate', array(
-	'username' => getenv('username'),
-	'password' => getenv('password')
+$response = $qb->api('API_AddField', array(
+	'dbid' => getenv('dbid'),
+	'label' => 'Test Field',
+	'type' => 'text'
+));
+
+$qb->api('API_DeleteField', array(
+	'dbid' => getenv('dbid'),
+	'fid' => $response['fid']
 ));
 
 ?>
