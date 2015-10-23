@@ -31,7 +31,36 @@ set_error_handler(function($errno, $errstr, $errfile, $errline, $errcontext){
 $stderr = fopen('php://stderr', 'w+');
 $error = false;
 
-$qb = new QuickBase();
+if(!getenv('TRAVIS')){
+	if(count($argv) !== 6){
+		echo implode("\n", array(
+			'ERROR: Incorrect CL Test Usage.',
+			'',
+			"\t$ php tests\\runAll.php <realm> <username> <password> <appToken> <dbid>",
+			'',
+			"\trealm:    www",
+			"\tusername: foo@bar.com",
+			"\tpassword: foobar",
+			"\tappToken: dn23iuct88jvbcx7v9vttp2an6",
+			"\tdbid:     bkcamms4m",
+			"\t          (must be a table dbid, not an application dbid)",
+			''
+		));
+
+		exit(1);
+	}
+
+	putenv('realm='.$argv[1]);
+	putenv('username='.$argv[2]);
+	putenv('password='.$argv[3]);
+	putenv('appToken='.$argv[4]);
+	putenv('dbid='.$argv[5]);
+}
+
+$qb = new QuickBase(array(
+	'realm' => getenv('realm'),
+	'appToken' => getenv('appToken')
+));
 
 /* Main */
 $files = array_diff(scandir(__DIR__), array(

@@ -15,9 +15,13 @@
  * limitations under the License.
 */
 
-$qb->api('API_Authenticate', array(
-	'username' => getenv('username'),
-	'password' => getenv('password')
+$response = $qb->api('API_AddRecord', array(
+	'dbid' => getenv('dbid')
+));
+
+$qb->api('API_DeleteRecord', array(
+	'dbid' => getenv('dbid'),
+	'rid' => $response['rid']
 ));
 
 ?>
