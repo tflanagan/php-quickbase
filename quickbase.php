@@ -261,8 +261,13 @@ class QuickBaseQuery {
 
 		$response = curl_exec($ch);
 
+		$errno = curl_errno($ch);
+		$error = curl_error($ch);
+
+		curl_close($ch);
+
 		if($response === false){
-			throw new QuickBaseError(curl_errno($ch), curl_error($ch));
+			throw new QuickBaseError($errno, $error);
 		}
 
 		$this->xmlResponse = new SimpleXmlIterator($response);
