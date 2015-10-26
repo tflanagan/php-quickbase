@@ -83,11 +83,13 @@ foreach($files as $i => $file){
 		include(__DIR__.'/'.$file);
 
 		echo 'Passed.';
-	}catch(Exception $e){
+	}catch(QuickBaseError $e){
 		fwrite($stderr, implode('', array(
 			'Failed!',
 			"\n\nError: [".$e->getCode().'] ',
 			$e->getMessage(),
+			'. ',
+			$e->getDetails(),
 			"\n".$e->getTraceAsString()
 		)));
 

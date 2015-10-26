@@ -14,7 +14,6 @@ $ composer require tflanagan/quickbase
 Example
 -------
 ```php
-
 try {
 	$qb = new QuickBase(array(
 		'realm' => 'www',
@@ -49,10 +48,43 @@ try {
 	));
 
 	var_dump($response['table']['records']);
-}catch(Exception $err){
-	var_dump($err);
+}catch(QuickBaseError $err){
+	echo '('.$err->getCode().') '.$err->getMessage().'. '.$err->getDetails();
 }
 
+```
+
+Error Handling
+--------------
+
+php-quickbase throws exceptions whenever an error is detected. You do not have to manually check for QuickBase errors, just wrap your code in `try/catch`'s and you're good to go!
+
+```php
+try {
+	// QuickBase API Calls Here
+}catch(QuickBaseError $err){
+	echo '('.$err->getCode().') '.$err->getMessage().'. '.$err->getDetails();
+
+	/*
+	 * class QuickBaseError extends Exception {
+	 *
+	 * 	protected int $code;
+	 * 	protected string $message;
+	 * 	protected string $details;
+	 *
+	 * 	protected int $line;
+	 * 	protected string $file;
+	 *
+	 * 	final public getCode(void);
+	 * 	final public getMessage(void);
+	 * 	final public getDetails(void);
+	 *
+	 * 	final public getLine(void);
+	 * 	final public getFile(void);
+	 *
+	 * }
+	*/
+}
 ```
 
 License

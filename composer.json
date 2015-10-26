@@ -1,7 +1,7 @@
 {
 	"name": "tflanagan/quickbase",
 	"type": "library",
-	"version": "0.0.1",
+	"version": "0.1.0",
 	"description": "A lightweight, very flexible QuickBase API",
 	"keywords": [
 		"QuickBase",
@@ -24,6 +24,7 @@
 	],
 	"require": {
 		"php": ">=5.4.0",
-		"ext-curl": "*"
+		"ext-curl": "*",
+		"ext-xml": "*"
 	}
 }
