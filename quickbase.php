@@ -105,7 +105,7 @@ class QuickBaseQuery {
 
 	protected $payload = '';
 	protected $xmlResponse = array();
-	
+
 	public function __construct(&$parent, $action = '', $options = array()){
 		$this->parent = $parent;
 		$this->action = $action;
@@ -281,14 +281,14 @@ class QuickBaseQuery {
 			foreach($arr as $key => $value){
 				if($key === '$'){
 					foreach($value as $attr => $attrValue){
-						$xml->addAttribute($attr, htmlspecialchars($attrValue));
+						$xml->addAttribute($attr, $attrValue);
 					}
 
 					continue;
 				}
 
 				if($key === '_'){
-					$xml[0] = htmlspecialchars($value);
+					$xml[0] = $value;
 
 					continue;
 				}
@@ -312,7 +312,7 @@ class QuickBaseQuery {
 				self::arr2Xml($arr[$key], $child);
 			}
 		}else{
-			$xml[0] = htmlspecialchars($arr);
+			$xml[0] = $arr;
 		}
 	}
 
@@ -529,6 +529,10 @@ class QuickBaseResponse {
 
 					if($query->options['includeRids']){
 						$newRecord['rid'] = $results['table']['records'][$i]['rid'];
+					}
+
+					if(isset($results['table']['records'][$i]['f']['_'])){
+						$results['table']['records'][$i]['f'] = array( $results['table']['records'][$i]['f'] );
 					}
 
 					foreach($results['table']['records'][$i]['f'] as $key => $field){
