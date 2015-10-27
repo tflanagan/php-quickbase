@@ -1,7 +1,7 @@
 {
+	"$schema": "http://json-schema.org/draft-04/schema#",
 	"name": "tflanagan/quickbase",
 	"type": "library",
-	"version": "0.1.0",
 	"description": "A lightweight, very flexible QuickBase API",
 	"keywords": [
 		"QuickBase",
@@ -22,6 +22,9 @@
 			"role": "Developer"
 		}
 	],
+	"autoload": {
+		"classmap": [ "quickbase.php" ]
+	},
 	"require": {
 		"php": ">=5.4.0",
 		"ext-curl": "*",
