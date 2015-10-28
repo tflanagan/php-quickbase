@@ -15,9 +15,21 @@
  * limitations under the License.
 */
 
-$qb->api('API_Authenticate', array(
+$expected = array(
+	'action' => 'API_Authenticate',
+	'errcode' => 0,
+	'errtext' => 'No error',
+	'ticket' => '',
+	'userid' => ''
+);
+
+$actual = $qb->api('API_Authenticate', array(
 	'username' => getenv('username'),
 	'password' => getenv('password')
 ));
+
+if(!objStrctMatch($actual, $expected)){
+	throw new Exception('Mismatched API_Authenticate Data Structure');
+}
 
 ?>

@@ -15,15 +15,37 @@
  * limitations under the License.
 */
 
-$response = $qb->api('API_AddField', array(
+$expected = array(
+	'action' => 'API_AddField',
+	'errcode' => 0,
+	'errtext' => 'No error',
+	'fid' => 0,
+	'label' => 'Test Field'
+);
+
+$actual = $qb->api('API_AddField', array(
 	'dbid' => getenv('dbid'),
 	'label' => 'Test Field',
 	'type' => 'text'
 ));
 
-$qb->api('API_DeleteField', array(
+if(!objStrctMatch($actual, $expected)){
+	throw new Exception('Mismatched API_AddField Data Structure');
+}
+
+$expected = array(
+	'action' => 'API_DeleteField',
+	'errcode' => 0,
+	'errtext' => 'No error'
+);
+
+$actual = $qb->api('API_DeleteField', array(
 	'dbid' => getenv('dbid'),
-	'fid' => $response['fid']
+	'fid' => $actual['fid']
 ));
+
+if(!objStrctMatch($actual, $expected)){
+	throw new Exception('Mismatched API_DeleteField Data Structure');
+}
 
 ?>

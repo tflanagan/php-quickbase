@@ -542,6 +542,33 @@ class QuickBaseResponse {
 					$results['table']['records'][$i] = $newRecord;
 				}
 			}
+
+			if(isset($results['table']['variables']) && isset($results['table']['variables']['var'])){
+				if(isset($results['table']['variables']['var']['_'])){
+					$results['table']['variables']['var'] = array( $results['table']['variables']['var'] );
+				}
+
+				$vars = array();
+
+				foreach($results['table']['variables']['var'] as $key => $value){
+					$vars[$value['name']] = $value['_'];
+				}
+
+				$results['table']['variables'] = $vars;
+			}
+
+			if(isset($results['table']['chdbids'])){
+				if(isset($results['table']['chdbids']['_'])){
+					$results['table']['chdbids'] = array( $results['table']['chdbids'] );
+				}
+
+				for($i = 0, $l = count($results['table']['chdbids']); $i < $l; ++$i){
+					$results['table']['chdbids'][$i] = array(
+						'name' => $results['table']['chdbids'][$i]['name'],
+						'dbid' => $results['table']['chdbids'][$i]['_']
+					);
+				}
+			}
 		}else{
 			if(isset($results['record'])){
 				$results['records'] = $results['record'];
@@ -585,12 +612,30 @@ class QuickBaseResponse {
 
 	final public static function API_GetSchema(&$query, &$results){
 		if(isset($results['table']['chdbids'])){
+			if(isset($results['table']['chdbids']['_'])){
+				$results['table']['chdbids'] = array( $results['table']['chdbids'] );
+			}
+
 			for($i = 0, $l = count($results['table']['chdbids']); $i < $l; ++$i){
 				$results['table']['chdbids'][$i] = array(
 					'name' => $results['table']['chdbids'][$i]['name'],
 					'dbid' => $results['table']['chdbids'][$i]['_']
 				);
 			}
+		}
+
+		if(isset($results['table']['variables']) && isset($results['table']['variables']['var'])){
+			if(isset($results['table']['variables']['var']['_'])){
+				$results['table']['variables']['var'] = array( $results['table']['variables']['var'] );
+			}
+
+			$vars = array();
+
+			foreach($results['table']['variables']['var'] as $key => $value){
+				$vars[$value['name']] = $value['_'];
+			}
+
+			$results['table']['variables'] = $vars;
 		}
 	}
 

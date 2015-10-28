@@ -15,13 +15,36 @@
  * limitations under the License.
 */
 
-$response = $qb->api('API_AddRecord', array(
+$expected = array(
+	'action' => 'API_AddRecord',
+	'errcode' => 0,
+	'errtext' => 'No error',
+	'rid' => 0,
+	'update_id' => 0
+);
+
+$actual = $qb->api('API_AddRecord', array(
 	'dbid' => getenv('dbid')
 ));
 
-$qb->api('API_DeleteRecord', array(
+if(!objStrctMatch($actual, $expected)){
+	throw new Exception('Mismatched API_AddRecord Data Structure');
+}
+
+$expected = array(
+	'action' => 'API_DeleteRecord',
+	'errcode' => 0,
+	'errtext' => 'No error',
+	'rid' => 0
+);
+
+$actual = $qb->api('API_DeleteRecord', array(
 	'dbid' => getenv('dbid'),
-	'rid' => $response['rid']
+	'rid' => $actual['rid']
 ));
+
+if(!objStrctMatch($actual, $expected)){
+	throw new Exception('Mismatched API_DeleteRecord Data Structure');
+}
 
 ?>

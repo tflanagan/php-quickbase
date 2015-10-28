@@ -15,9 +15,20 @@
  * limitations under the License.
 */
 
-$qb->api('API_DoQueryCount', array(
+$expected = array(
+	'action' => 'API_DoQueryCount',
+	'errcode' => 0,
+	'errtext' => 'No error',
+	'numMatches' => 0
+);
+
+$actual = $qb->api('API_DoQueryCount', array(
 	'dbid' => getenv('dbid'),
 	'query' => "{'3'.XEX.''}"
 ));
+
+if(!objStrctMatch($actual, $expected)){
+	throw new Exception('Mismatched API_DoQueryCount Data Structure');
+}
 
 ?>

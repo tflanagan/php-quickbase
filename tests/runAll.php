@@ -62,6 +62,71 @@ $qb = new QuickBase(array(
 	'appToken' => getenv('appToken')
 ));
 
+/* Helpers */
+function objStrctEquiv($a, $b){
+	$aType = gettype($a);
+	$bType = gettype($b);
+
+	if(($aType !== 'array' && $aType !== 'object') || ($bType !== 'array' && $bType !== 'object')){
+		return false;
+	}
+
+	$keys = array_keys($a);
+	$nKeys = count($keys);
+
+	for($i = 0; $i < $nKeys; ++$i){
+		$key = $keys[$i];
+		$val = $a[$key];
+
+		if(!isset($b[$key])){
+			return false;
+		}
+
+		$vType = gettype($val);
+
+		if(!objStrctMatch($val, $b[$key])){
+			return false;
+		}
+	}
+
+	return true;
+}
+
+function objStrctMatch($a, $b){
+	if($a === NULL || $b === NULL || !isset($a) || !isset($b)){
+		return $a === $b;
+	}
+
+	$aType = gettype($a);
+	$bType = gettype($b);
+
+	if($aType === 'double'){
+		$aType = 'integer';
+	}
+
+	if($bType === 'double'){
+		$bType = 'integer';
+	}
+
+	if(($aType !== 'array' && $aType !== 'object') || ($bType !== 'array' && $bType !== 'object')){
+		return $aType === $bType;
+	}
+
+	if($aType === 'array' && $bType === 'array' && count($a) !== count($b)){
+		return false;
+	}
+
+	if(($aType === 'object' || $aType === 'array') && !objStrctEquiv($a, $b)){
+		return false;
+	}
+
+	if(($bType === 'object' || $bType === 'array') && !objStrctEquiv($b, $a)){
+		return false;
+	}
+
+	return true;
+}
+
 /* Main */
 $files = array_diff(scandir(__DIR__), array(
 	'..',
@@ -83,13 +148,19 @@ foreach($files as $i => $file){
 		include(__DIR__.'/'.$file);
 
 		echo 'Passed.';
-	}catch(QuickBaseError $e){
+	}catch(Exception $e){
+		$details = '';
+
+		if(method_exists($e, 'getDetails')){
+			$details = $e->getDetails();
+		}
+
 		fwrite($stderr, implode('', array(
 			'Failed!',
 			"\n\nError: [".$e->getCode().'] ',
 			$e->getMessage(),
 			'. ',
-			$e->getDetails(),
+			$details,
 			"\n".$e->getTraceAsString()
 		)));
 

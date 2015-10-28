@@ -15,6 +15,26 @@
  * limitations under the License.
 */
 
-$qb->api('API_GetUserInfo');
+$expected = array(
+	'action' => 'API_GetUserInfo',
+	'errcode' => 0,
+	'errtext' => 'No error',
+	'user' => array(
+		'id' => '',
+		'firstName' => '',
+		'lastName' => '',
+		'login' => '',
+		'email' => '',
+		'screenName' => '',
+		'externalAuth' => 0,
+		'isVerified' => 1
+	)
+);
+
+$actual = $qb->api('API_GetUserInfo');
+
+if(!objStrctMatch($actual, $expected)){
+	throw new Exception('Mismatched API_GetUserInfo Data Structure');
+}
 
 ?>
