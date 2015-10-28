@@ -569,6 +569,19 @@ class QuickBaseResponse {
 					);
 				}
 			}
+
+			if(isset($results['table']['lusers'])){
+				if(isset($results['table']['lusers']['_'])){
+					$results['table']['lusers'] = array( $results['table']['lusers'] );
+				}
+
+				for($i = 0, $l = count($results['table']['lusers']); $i < $l; ++$i){
+					$results['table']['lusers'][$i] = array(
+						'name' => $results['table']['lusers'][$i]['_'],
+						'id' => $results['table']['lusers'][$i]['id']
+					);
+				}
+			}
 		}else{
 			if(isset($results['record'])){
 				$results['records'] = $results['record'];
