@@ -78,11 +78,7 @@ function objStrctEquiv($a, $b){
 		$key = $keys[$i];
 		$val = $a[$key];
 
-		if(!isset($b[$key])){
-			return false;
-		}
-
-		if(!objStrctMatch($val, $b[$key])){
+		if(!isset($b[$key]) || !objStrctMatch($val, $b[$key])){
 			return false;
 		}
 	}

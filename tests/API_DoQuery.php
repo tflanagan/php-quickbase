@@ -210,8 +210,7 @@ $actual = $qb->api('API_DoQuery', array(
 	'clist' => '1.2.3.4.5'
 ));
 
-if(!objStrctMatch($actual['table']['records'], $expected['table']['records'])){
-	var_dump($actual['table']['records'], $expected['table']['records']);
+if(!objStrctMatch($actual, $expected)){
 	throw new Exception('Mismatched API_DoQuery Formatted Data Structure');
 }
 
