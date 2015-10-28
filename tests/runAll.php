@@ -82,8 +82,6 @@ function objStrctEquiv($a, $b){
 			return false;
 		}
 
-		$vType = gettype($val);
-
 		if(!objStrctMatch($val, $b[$key])){
 			return false;
 		}
