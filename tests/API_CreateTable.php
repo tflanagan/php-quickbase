@@ -15,26 +15,39 @@
  * limitations under the License.
 */
 
+echo 'test skipped... ';
+
+return;
+
 $expected = array(
-	'action' => 'API_GetUserInfo',
+	'action' => 'API_CreateTable',
 	'errcode' => 0,
 	'errtext' => 'No error',
-	'user' => array(
-		'id' => '',
-		'firstName' => '',
-		'lastName' => '',
-		'login' => '',
-		'email' => '',
-		'screenName' => '',
-		'externalAuth' => 0,
-		'isVerified' => 1
-	)
+	'newdbid' => ''
 );
 
-$actual = $qb->api('API_GetUserInfo');
+$actual = $qb->api('API_CreateTable', array(
+	'dbid' => getenv('appid'),
+	'tname' => 'Test DB',
+	'pnoun' => 'Test DB'
+));
 
 if(!objStrctMatch($actual, $expected)){
-	throw new Exception('Mismatched API_GetUserInfo Data Structure');
+	throw new Exception('Mismatched API_CreateTable Data Structure');
+}
+
+$expected = array(
+	'action' => 'API_DeleteDatabase',
+	'errcode' => 0,
+	'errtext' => 'No error'
+);
+
+$actual = $qb->api('API_DeleteDatabase', array(
+	'dbid' => $actual['newdbid']
+));
+
+if(!objStrctMatch($actual, $expected)){
+	throw new Exception('Mismatched API_DeleteDatabase Data Structure');
 }
 
 ?>

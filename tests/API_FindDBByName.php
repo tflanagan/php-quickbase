@@ -16,25 +16,20 @@
 */
 
 $expected = array(
-	'action' => 'API_GetUserInfo',
+	'action' => 'API_FindDBByName.js',
 	'errcode' => 0,
 	'errtext' => 'No error',
-	'user' => array(
-		'id' => '',
-		'firstName' => '',
-		'lastName' => '',
-		'login' => '',
-		'email' => '',
-		'screenName' => '',
-		'externalAuth' => 0,
-		'isVerified' => 1
-	)
+	'dbid' => '',
+	'dbname' => ''
 );
 
-$actual = $qb->api('API_GetUserInfo');
+/* Main */
+$actual = $qb->api('API_FindDBByName', array(
+	'dbname' => 'Node-QuickBase'
+));
 
 if(!objStrctMatch($actual, $expected)){
-	throw new Exception('Mismatched API_GetUserInfo Data Structure');
+	throw new Exception('Mismatched API_FindDBByName Data Structure');
 }
 
 ?>

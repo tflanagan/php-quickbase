@@ -15,26 +15,14 @@
  * limitations under the License.
 */
 
-$expected = array(
-	'action' => 'API_GetUserInfo',
-	'errcode' => 0,
-	'errtext' => 'No error',
-	'user' => array(
-		'id' => '',
-		'firstName' => '',
-		'lastName' => '',
-		'login' => '',
-		'email' => '',
-		'screenName' => '',
-		'externalAuth' => 0,
-		'isVerified' => 1
-	)
-);
+$expected = '<html></html>';
 
-$actual = $qb->api('API_GetUserInfo');
+$actual = $qb->api('API_GenAddRecordForm', array(
+	'dbid' => getenv('dbid')
+));
 
 if(!objStrctMatch($actual, $expected)){
-	throw new Exception('Mismatched API_GetUserInfo Data Structure');
+	throw new Exception('Mismatched API_GenAddRecordForm Data Structure');
 }
 
 ?>

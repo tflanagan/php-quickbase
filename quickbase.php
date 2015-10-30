@@ -33,7 +33,8 @@ class QuickBase {
 			'includeRids' => true,
 			'returnPercentage' => false,
 			'fmt' => 'structured',
-			'encoding' => 'UTF-8'
+			'encoding' => 'UTF-8',
+			'dbidAsParam' => false
 		),
 
 		'status' => array(
@@ -58,8 +59,6 @@ class QuickBase {
 			->actionRequest()
 			->constructPayload()
 			->transmit()
-			->processResponse()
-			->checkForAndHandleError()
 			->actionResponse();
 
 		return $query->response;
@@ -104,10 +103,10 @@ class QuickBaseQuery {
 	public $response = array();
 
 	protected $payload = '';
-	protected $xmlResponse = array();
 
 	public function __construct(&$parent, $action = '', $options = array()){
 		$this->parent = $parent;
+		$this->settings = array_replace_recursive(array(), $this->parent->settings);
 		$this->action = $action;
 		$this->options = $options;
 
@@ -131,20 +130,20 @@ class QuickBaseQuery {
 	}
 
 	final public function addFlags(){
-		if(!isset($this->options['msInUTC']) && $this->parent->settings['flags']['msInUTC']){
+		if(!isset($this->options['msInUTC']) && $this->settings['flags']['msInUTC']){
 			$this->options['msInUTC'] = 1;
 		}
 
-		if(!isset($this->options['appToken']) && $this->parent->settings['appToken']){
-			$this->options['appToken'] = $this->parent->settings['appToken'];
+		if(!isset($this->options['appToken']) && $this->settings['appToken']){
+			$this->options['appToken'] = $this->settings['appToken'];
 		}
 
-		if(!isset($this->options['ticket']) && $this->parent->settings['ticket']){
-			$this->options['ticket'] = $this->parent->settings['ticket'];
+		if(!isset($this->options['ticket']) && $this->settings['ticket']){
+			$this->options['ticket'] = $this->settings['ticket'];
 		}
 
-		if(!isset($this->options['encoding']) && $this->parent->settings['flags']['encoding']){
-			$this->options['encoding'] = $this->parent->settings['flags']['encoding'];
+		if(!isset($this->options['encoding']) && $this->settings['flags']['encoding']){
+			$this->options['encoding'] = $this->settings['flags']['encoding'];
 		}
 
 		return $this;
@@ -153,7 +152,7 @@ class QuickBaseQuery {
 	final public function constructPayload(){
 		$this->payload = '';
 
-		if($this->parent->settings['flags']['useXML']){
+		if($this->settings['flags']['useXML']){
 			$xmlDoc = new SimpleXMLElement(implode('', array(
 				'<?xml version="1.0" encoding="',
 				$this->options['encoding'],
@@ -174,7 +173,7 @@ class QuickBaseQuery {
 	}
 
 	final public function checkForAndHandleError(){
-		if($this->response['errcode'] != $this->parent->settings['status']['errcode']){
+		if($this->response['errcode'] != $this->settings['status']['errcode']){
 			if($this->response['errcode'] == 4 && isset($this->parent->settings['username']) && isset($this->parent->settings['password'])){
 				try {
 					$newTicket = $this->parent->api('API_Authenticate', array(
@@ -183,13 +182,12 @@ class QuickBaseQuery {
 					));
 
 					$this->parent->settings['ticket'] = $newTicket['ticket'];
+					$this->settings['ticket'] = $newTicket['ticket'];
 					$this->options['ticket'] = $newTicket['ticket'];
 
 					return $this
 						->constructPayload()
-						->transmit()
-						->processResponse()
-						->checkForAndHandleError();
+						->transmit();
 				}catch(Exception $newTicketErr){
 					throw $newTicketErr;
 				}
@@ -217,35 +215,26 @@ class QuickBaseQuery {
 		return $this;
 	}
 
-	final public function processResponse(){
-		$this->response = array();
-
-		$this->xml2Arr($this->xmlResponse, $this->response);
-
-		$this->cleanXml2Arr($this->response);
-
-		return $this;
-	}
-
 	final public function transmit(){
 		$ch = curl_init(implode('', array(
-			$this->parent->settings['useSSL'] ? 'https://' : 'http://',
-			$this->parent->settings['realm'],
+			$this->settings['useSSL'] ? 'https://' : 'http://',
+			$this->settings['realm'],
 			'.',
-			$this->parent->settings['domain'],
+			$this->settings['domain'],
 			'/db/',
-			isset($this->options['dbid']) ? $this->options['dbid'] : 'main',
+			isset($this->options['dbid']) && !$this->settings['flags']['dbidAsParam'] ? $this->options['dbid'] : 'main',
 			'?act=',
 			$this->action,
-			$this->parent->settings['flags']['useXML'] ? '' : $this->payload
+			$this->settings['flags']['useXML'] ? '' : $this->payload
 		)));
 
-		curl_setopt($ch, CURLOPT_PORT, $this->parent->settings['useSSL'] ? 443 : 80);
+		curl_setopt($ch, CURLOPT_PORT, $this->settings['useSSL'] ? 443 : 80);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_HEADER, true);
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 
-		if($this->parent->settings['flags']['useXML']){
+		if($this->settings['flags']['useXML']){
 			curl_setopt($ch, CURLOPT_POST, true);
 			curl_setopt($ch, CURLOPT_HTTPHEADER, array(
 				'POST /db/'.(isset($this->options['dbid']) ? $this->options['dbid'] : 'main').' HTTP/1.0',
@@ -264,13 +253,32 @@ class QuickBaseQuery {
 		$errno = curl_errno($ch);
 		$error = curl_error($ch);
 
+		$headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+
 		curl_close($ch);
 
 		if($response === false){
 			throw new QuickBaseError($errno, $error);
 		}
 
-		$this->xmlResponse = new SimpleXmlIterator($response);
+		$headers = substr($response, 0, $headerSize);
+		$body = substr($response, $headerSize);
+
+		self::parseCURLHeaders($headers);
+
+		if($headers['Content-Type'] === 'application/xml'){
+			$this->response = array();
+
+			$xml = new SimpleXmlIterator($body);
+
+			$this->xml2Arr($xml, $this->response);
+
+			$this->cleanXml2Arr($this->response);
+
+			$this->checkForAndHandleError();
+		}else{
+			$this->response = $body;
+		}
 
 		return $this;
 	}
@@ -355,6 +363,19 @@ class QuickBaseQuery {
 		}
 	}
 
+	final protected static function parseCURLHeaders(&$headers){
+		$newHeaders = array();
+		$headers = explode("\r\n", $headers);
+
+		foreach($headers as $header){
+			$i = strpos($header, ':');
+
+			$newHeaders[substr($header, 0, $i)] = substr($header, $i + 2);
+		}
+
+		$headers = $newHeaders;
+	}
+
 	final protected static function xml2Arr($xml, &$arr){
 		for($xml->rewind(); $xml->valid(); $xml->next()){
 			$key = $xml->key();
@@ -408,7 +429,7 @@ class QuickBaseRequest {
 
 	final public static function API_Authenticate(&$query){
 		// API_Authenticate can only happen over SSL
-		$query->parent->settings['useSSL'] = true;
+		$query->settings['useSSL'] = true;
 	}
 
 	// final public static function API_ChangeGroupInfo(&$query){ }
@@ -427,16 +448,16 @@ class QuickBaseRequest {
 	// final public static function API_DeleteRecord(&$query){ }
 
 	final public static function API_DoQuery(&$query){
-		if(!isset($query->options['returnPercentage']) && isset($query->parent->settings['flags']['returnPercentage'])){
-			$query->options['returnPercentage'] = $query->parent->settings['flags']['returnPercentage'];
+		if(!isset($query->options['returnPercentage']) && isset($query->settings['flags']['returnPercentage'])){
+			$query->options['returnPercentage'] = $query->settings['flags']['returnPercentage'];
 		}
 
-		if(!isset($query->options['fmt']) && isset($query->parent->settings['flags']['fmt'])){
-			$query->options['fmt'] = $query->parent->settings['flags']['fmt'];
+		if(!isset($query->options['fmt']) && isset($query->settings['flags']['fmt'])){
+			$query->options['fmt'] = $query->settings['flags']['fmt'];
 		}
 
-		if(!isset($query->options['includeRids']) && isset($query->parent->settings['flags']['includeRids'])){
-			$query->options['includeRids'] = $query->parent->settings['flags']['includeRids'];
+		if(!isset($query->options['includeRids']) && isset($query->settings['flags']['includeRids'])){
+			$query->options['includeRids'] = $query->settings['flags']['includeRids'];
 		}
 	}
 
@@ -448,7 +469,11 @@ class QuickBaseRequest {
 	// final public static function API_GenAddRecordForm(&$query){ }
 	// final public static function API_GenResultsTable(&$query){ }
 	// final public static function API_GetAncestorInfo(&$query){ }
-	// final public static function API_GetAppDTMInfo(&$query){ }
+
+	final public static function API_GetAppDTMInfo(&$query){
+		$query->settings['flags']['dbidAsParam'] = true;
+	}
+
 	// final public static function API_GetDBPage(&$query){ }
 	// final public static function API_GetDBInfo(&$query){ }
 	// final public static function API_GetDBVar(&$query){ }
@@ -500,8 +525,13 @@ class QuickBaseResponse {
 
 	final public static function API_Authenticate(&$query, &$results){
 		$query->parent->settings['ticket'] = $results['ticket'];
+		$query->settings['ticket'] = $results['ticket'];
+
 		$query->parent->settings['username'] = $query->options['username'];
+		$query->settings['username'] = $query->options['username'];
+
 		$query->parent->settings['password'] = $query->options['password'];
+		$query->settings['password'] = $query->options['password'];
 	}
 
 	// final public static function API_ChangeGroupInfo(&$query, &$results){ }
@@ -654,11 +684,30 @@ class QuickBaseResponse {
 
 	// final public static function API_GetRecordAsHTML(&$query, &$results){ }
 	// final public static function API_GetRecordInfo(&$query, &$results){ }
-	// final public static function API_GetRoleInfo(&$query, &$results){ }
+
+	final public static function API_GetRoleInfo(&$query, &$results){
+		if(isset($results['roles']['id'])){
+			$results['roles'] = array( $results['roles'] );
+		}
+
+		for($i = 0, $l = count($results['roles']); $i < $l; ++$i){
+			$results['roles'][$i]['access'] = array(
+				'name' => $results['roles'][$i]['access']['_'],
+				'id' => $results['roles'][$i]['access']['id']
+			);
+		}
+	}
+
 	// final public static function API_GetUserInfo(&$query, &$results){ }
 	// final public static function API_GetUserRole(&$query, &$results){ }
 	// final public static function API_GetUsersInGroup(&$query, &$results){ }
-	// final public static function API_GrantedDBs(&$query, &$results){ }
+
+	final public static function API_GrantedDBs(&$query, &$results){
+		if(isset($results['databases']['dbinfo'])){
+			$results['databases'] = $results['databases']['dbinfo'];
+		}
+	}
+
 	// final public static function API_GrantedDBsForGroup(&$query, &$results){ }
 	// final public static function API_GrantedGroups(&$query, &$results){ }
 	// final public static function API_ImportFromCSV(&$query, &$results){ }
@@ -676,7 +725,17 @@ class QuickBaseResponse {
 	// final public static function API_SetKeyField(&$query, &$results){ }
 	// final public static function API_SignOut(&$query, &$results){ }
 	// final public static function API_UploadFile(&$query, &$results){ }
-	// final public static function API_UserRoles(&$query, &$results){ }
+
+	final public static function API_UserRoles(&$query, &$results){
+		for($i = 0, $l = count($results['users']); $i < $l; ++$i){
+			for($o = 0, $k = count($results['users'][$i]['roles']); $o < $k; ++$o){
+				$results['users'][$i]['roles'][$o]['access'] = array(
+					'name' => $results['users'][$i]['roles'][$o]['access']['_'],
+					'id' => $results['users'][$i]['roles'][$o]['access']['id']
+				);
+			}
+		}
+	}
 
 }
 

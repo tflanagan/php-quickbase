@@ -16,25 +16,23 @@
 */
 
 $expected = array(
-	'action' => 'API_GetUserInfo',
+	'action' => 'API_ImportFromCSV',
 	'errcode' => 0,
 	'errtext' => 'No error',
-	'user' => array(
-		'id' => '',
-		'firstName' => '',
-		'lastName' => '',
-		'login' => '',
-		'email' => '',
-		'screenName' => '',
-		'externalAuth' => 0,
-		'isVerified' => 1
-	)
+	'num_recs_input' => 0,
+	'num_recs_added' => 0,
+	'num_recs_updated' => 0,
+	'num_recs_unchanged' => 0
 );
 
-$actual = $qb->api('API_GetUserInfo');
+$actual = $qb->api('API_ImportFromCSV', array(
+	'dbid' => getenv('dbid'),
+	'clist' => 3,
+	'records_csv' => array( ' ' )
+));
 
 if(!objStrctMatch($actual, $expected)){
-	throw new Exception('Mismatched API_GetUserInfo Data Structure');
+	throw new Exception('Mismatched API_ImportFromCSV Data Structure');
 }
 
 ?>

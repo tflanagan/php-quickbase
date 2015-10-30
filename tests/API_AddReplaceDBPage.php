@@ -16,25 +16,21 @@
 */
 
 $expected = array(
-	'action' => 'API_GetUserInfo',
+	'action' => 'API_AddReplaceDBPage.js',
 	'errcode' => 0,
 	'errtext' => 'No error',
-	'user' => array(
-		'id' => '',
-		'firstName' => '',
-		'lastName' => '',
-		'login' => '',
-		'email' => '',
-		'screenName' => '',
-		'externalAuth' => 0,
-		'isVerified' => 1
-	)
+	'pageID' => 0
 );
 
-$actual = $qb->api('API_GetUserInfo');
+$actual = $qb->api('API_AddReplaceDBPage', array(
+	'dbid' => getenv('appid'),
+	'pagename' => 'testpage.html',
+	'pagetype' => 1,
+	'pagebody' => '<html></html>'
+));
 
 if(!objStrctMatch($actual, $expected)){
-	throw new Exception('Mismatched API_GetUserInfo Data Structure');
+	throw new Exception('Mismatched API_AddReplaceDBPage Data Structure');
 }
 
 ?>

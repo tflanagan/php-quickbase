@@ -32,11 +32,11 @@ $stderr = fopen('php://stderr', 'w+');
 $error = false;
 
 if(!getenv('TRAVIS')){
-	if(count($argv) !== 6){
+	if(count($argv) !== 7){
 		echo implode("\n", array(
 			'ERROR: Incorrect CL Test Usage.',
 			'',
-			"\t$ php tests\\runAll.php <realm> <username> <password> <appToken> <dbid>",
+			"\t$ php tests\\runAll.php <realm> <username> <password> <appToken> <dbid> <appid>",
 			'',
 			"\trealm:    www",
 			"\tusername: foo@bar.com",
@@ -44,6 +44,8 @@ if(!getenv('TRAVIS')){
 			"\tappToken: dn23iuct88jvbcx7v9vttp2an6",
 			"\tdbid:     bkcamms4m",
 			"\t          (must be a table dbid, not an application dbid)",
+			"\appid:     bkcamms4c",
+			"\t          (must be a application dbid, not an table dbid)",
 			''
 		));
 
@@ -55,6 +57,7 @@ if(!getenv('TRAVIS')){
 	putenv('password='.$argv[3]);
 	putenv('appToken='.$argv[4]);
 	putenv('dbid='.$argv[5]);
+	putenv('appid='.$argv[6]);
 }
 
 $qb = new QuickBase(array(

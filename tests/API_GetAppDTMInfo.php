@@ -16,25 +16,31 @@
 */
 
 $expected = array(
-	'action' => 'API_GetUserInfo',
+	'action' => 'API_GetAppDTMInfo',
 	'errcode' => 0,
 	'errtext' => 'No error',
-	'user' => array(
-		'id' => '',
-		'firstName' => '',
-		'lastName' => '',
-		'login' => '',
-		'email' => '',
-		'screenName' => '',
-		'externalAuth' => 0,
-		'isVerified' => 1
+	'RequestTime' => 0,
+	'RequestNextAllowedTime' => 0,
+	'app' => array(
+		'lastModifiedTime' => 0,
+		'lastRecModTime' => 0,
+		'id' => ''
+	),
+	'tables' => array(
+		array(
+			'lastModifiedTime' => 0,
+			'lastRecModTime' => 0,
+			'id' => ''
+		)
 	)
 );
 
-$actual = $qb->api('API_GetUserInfo');
+$actual = $qb->api('API_GetAppDTMInfo', array(
+	'dbid' => getenv('appid')
+));
 
 if(!objStrctMatch($actual, $expected)){
-	throw new Exception('Mismatched API_GetUserInfo Data Structure');
+	throw new Exception('Mismatched API_GetAppDTMInfo Data Structure');
 }
 
 ?>

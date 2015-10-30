@@ -16,25 +16,19 @@
 */
 
 $expected = array(
-	'action' => 'API_GetUserInfo',
+	'action' => 'API_GetDBVar',
 	'errcode' => 0,
 	'errtext' => 'No error',
-	'user' => array(
-		'id' => '',
-		'firstName' => '',
-		'lastName' => '',
-		'login' => '',
-		'email' => '',
-		'screenName' => '',
-		'externalAuth' => 0,
-		'isVerified' => 1
-	)
+	'value' => ''
 );
 
-$actual = $qb->api('API_GetUserInfo');
+$actual = $qb->api('API_GetDBVar', array(
+	'dbid' => getenv('appid'),
+	'varname' => 'test'
+));
 
 if(!objStrctMatch($actual, $expected)){
-	throw new Exception('Mismatched API_GetUserInfo Data Structure');
+	throw new Exception('Mismatched API_GetDBVar Data Structure');
 }
 
 ?>

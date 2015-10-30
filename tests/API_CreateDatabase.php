@@ -15,26 +15,41 @@
  * limitations under the License.
 */
 
+echo 'test skipped... ';
+
+return;
+
 $expected = array(
-	'action' => 'API_GetUserInfo',
+	'action' => 'API_CreateDatabase',
 	'errcode' => 0,
 	'errtext' => 'No error',
-	'user' => array(
-		'id' => '',
-		'firstName' => '',
-		'lastName' => '',
-		'login' => '',
-		'email' => '',
-		'screenName' => '',
-		'externalAuth' => 0,
-		'isVerified' => 1
-	)
+	'dbid' => '',
+	'appdbid' => '',
+	'apptoken' => ''
 );
 
-$actual = $qb->api('API_GetUserInfo');
+$actual = $qb->api('API_CreateDatabase', array(
+	'dbname' => 'Test DB',
+	'dbdesc' => 'Testing DB from Node-QuickBase Tests',
+	'createapptoken' => true
+));
 
 if(!objStrctMatch($actual, $expected)){
-	throw new Exception('Mismatched API_GetUserInfo Data Structure');
+	throw new Exception('Mismatched API_CreateDatabase Data Structure');
+}
+
+$expected = array(
+	'action' => 'API_DeleteDatabase',
+	'errcode' => 0,
+	'errtext' => 'No error'
+);
+
+$actual = $qb->api('API_DeleteDatabase', array(
+	'dbid' => $actual['appdbid']
+));
+
+if(!objStrctMatch($actual, $expected)){
+	throw new Exception('Mismatched API_DeleteDatabase Data Structure');
 }
 
 ?>

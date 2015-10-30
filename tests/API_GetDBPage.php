@@ -16,25 +16,19 @@
 */
 
 $expected = array(
-	'action' => 'API_GetUserInfo',
+	'action' => 'API_GetDBPage',
 	'errcode' => 0,
 	'errtext' => 'No error',
-	'user' => array(
-		'id' => '',
-		'firstName' => '',
-		'lastName' => '',
-		'login' => '',
-		'email' => '',
-		'screenName' => '',
-		'externalAuth' => 0,
-		'isVerified' => 1
-	)
+	'pagebody' => '<html></html>'
 );
 
-$actual = $qb->api('API_GetUserInfo');
+$actual = $qb->api('API_GetDBPage', array(
+	'dbid' => getenv('appid'),
+	'pageID' => 2
+));
 
 if(!objStrctMatch($actual, $expected)){
-	throw new Exception('Mismatched API_GetUserInfo Data Structure');
+	throw new Exception('Mismatched API_GetDBPage Data Structure');
 }
 
 ?>

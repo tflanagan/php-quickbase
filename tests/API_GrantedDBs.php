@@ -16,25 +16,19 @@
 */
 
 $expected = array(
-	'action' => 'API_GetUserInfo',
+	'action' => 'API_GrantedDBs',
 	'errcode' => 0,
 	'errtext' => 'No error',
-	'user' => array(
-		'id' => '',
-		'firstName' => '',
-		'lastName' => '',
-		'login' => '',
-		'email' => '',
-		'screenName' => '',
-		'externalAuth' => 0,
-		'isVerified' => 1
+	'databases' => array(
+		array( 'dbname' => '', 'dbid' => '' ),
+		array( 'dbname' => '', 'dbid' => '' )
 	)
 );
 
-$actual = $qb->api('API_GetUserInfo');
+$actual = $qb->api('API_GrantedDBs');
 
 if(!objStrctMatch($actual, $expected)){
-	throw new Exception('Mismatched API_GetUserInfo Data Structure');
+	throw new Exception('Mismatched API_GrantedDBs Data Structure');
 }
 
 ?>
