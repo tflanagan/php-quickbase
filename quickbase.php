@@ -357,6 +357,8 @@ class QuickBaseQuery {
 					}else
 					if(strtolower($arr[$key]) === 'false'){
 						$arr[$key] = false;
+					}else{
+						$arr[$key] = trim($arr[$key]);
 					}
 				}
 			}
@@ -552,6 +554,10 @@ class QuickBaseResponse {
 	final public static function API_DoQuery(&$query, &$results){
 		if(isset($query->options['fmt']) && $query->options['fmt'] === 'structured'){
 			if(isset($results['table']['records'])){
+				if(!is_array($results['table']['records']) && $results['table']['records'] === ''){
+					$results['table']['records'] = array();
+				}
+
 				for($i = 0, $l = count($results['table']['records']); $i < $l; ++$i){
 					$newRecord = array(
 						'update_id' => $results['table']['records'][$i]['update_id']
