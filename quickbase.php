@@ -386,12 +386,18 @@ class QuickBaseQuery {
 				$arr[$key] = array();
 			}
 
+			$node = trim(strval($xml->current()));
+
 			if($xml->hasChildren()){
-				$node = array();
+				if($node !== ''){
+					$node = array(
+						'_' => $node
+					);
+				}else{
+					$node = array();
+				}
 
 				self::xml2Arr($xml->current(), $node);
-			}else{
-				$node = strval($xml->current());
 			}
 
 			$attrs = $xml->current()->attributes();
@@ -572,7 +578,16 @@ class QuickBaseResponse {
 					}
 
 					foreach($results['table']['records'][$i]['f'] as $key => $field){
-						$newRecord[$field['id']] = $field['_'];
+						if(isset($field['url'])){
+							$value = array(
+								'filename' => $field['_'],
+								'url' => $field['url']
+							);
+						}else{
+							$value = $field['_'];
+						}
+
+						$newRecord[$field['id']] = $value;
 					}
 
 					$results['table']['records'][$i] = $newRecord;
