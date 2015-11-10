@@ -33,7 +33,7 @@ class QuickBase {
 			'includeRids' => true,
 			'returnPercentage' => false,
 			'fmt' => 'structured',
-			'encoding' => 'UTF-8',
+			'encoding' => 'ISO-8859-1',
 			'dbidAsParam' => false
 		),
 
