@@ -41,7 +41,9 @@ class QuickBase {
 			'errcode' => 0,
 			'errtext' => 'No error',
 			'errdetail' => ''
-		)
+		),
+
+		'maxErrorRetryAttempts' => 3
 	);
 
 	public function __construct($options = array()){
@@ -101,6 +103,8 @@ class QuickBaseQuery {
 	public $action = '';
 	public $options = array();
 	public $response = array();
+
+	private $nErrors = 0;
 
 	protected $payload = '';
 
@@ -174,7 +178,9 @@ class QuickBaseQuery {
 
 	final public function checkForAndHandleError(){
 		if($this->response['errcode'] != $this->settings['status']['errcode']){
-			if($this->response['errcode'] == 4 && isset($this->parent->settings['username']) && isset($this->parent->settings['password'])){
+			++$this->nErrors;
+
+			if($this->nErrors <= $this->parent->settings['maxErrorRetryAttempts'] && $this->response['errcode'] == 4 && isset($this->parent->settings['username']) && isset($this->parent->settings['password'])){
 				try {
 					$newTicket = $this->parent->api('API_Authenticate', array(
 						'username' => $this->parent->settings['username'],
@@ -258,6 +264,12 @@ class QuickBaseQuery {
 		curl_close($ch);
 
 		if($response === false){
+			++$this->nErrors;
+
+			if($this->nErrors <= $this->settings['maxErrorRetryAttempts']){
+				return $this->transmit();
+			}
+
 			throw new QuickBaseError($errno, $error);
 		}
 
