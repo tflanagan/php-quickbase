@@ -43,9 +43,7 @@ if(!getenv('TRAVIS')){
 			"\tpassword: foobar",
 			"\tappToken: dn23iuct88jvbcx7v9vttp2an6",
 			"\tdbid:     bkcamms4m",
-			"\t          (must be a table dbid, not an application dbid)",
-			"\appid:     bkcamms4c",
-			"\t          (must be a application dbid, not an table dbid)",
+			"\tappid:    bkcamms4c",
 			''
 		));
 
