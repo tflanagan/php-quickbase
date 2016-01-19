@@ -15,6 +15,8 @@
  * limitations under the License.
 */
 
+namespace QuickBase {
+
 class QuickBase {
 
 	private $defaults = array(
@@ -74,7 +76,7 @@ class QuickBase {
 
 }
 
-class QuickBaseError extends Exception {
+class QuickBaseError extends \Exception {
 
 	protected $details;
 
@@ -125,7 +127,7 @@ class QuickBaseQuery {
 	}
 
 	final public function actionRequest(){
-		if(method_exists('QuickBaseRequest', $this->action)){
+		if(method_exists('\QuickBase\QuickBaseRequest', $this->action)){
 			QuickBaseRequest::{$this->action}($this);
 		}
 
@@ -133,7 +135,7 @@ class QuickBaseQuery {
 	}
 
 	final public function actionResponse(){
-		if(method_exists('QuickBaseResponse', $this->action)){
+		if(method_exists('\QuickBase\QuickBaseResponse', $this->action)){
 			QuickBaseResponse::{$this->action}($this, $this->response);
 		}
 
@@ -168,7 +170,7 @@ class QuickBaseQuery {
 		$this->payload = '';
 
 		if($this->settings['flags']['useXML']){
-			$xmlDoc = new SimpleXMLElement(implode('', array(
+			$xmlDoc = new \SimpleXMLElement(implode('', array(
 				'<?xml version="1.0" encoding="',
 				$this->options['encoding'],
 				'"?>',
@@ -192,7 +194,7 @@ class QuickBaseQuery {
 	}
 
 	final public function checkForAndHandleError(){
-		if($this->response['errcode'] != $this->settings['status']['errcode']){
+		if(isset($this->response['errcode']) && $this->response['errcode'] != $this->settings['status']['errcode']){
 			++$this->nErrors;
 
 			if($this->nErrors <= $this->parent->settings['maxErrorRetryAttempts'] && $this->response['errcode'] == 4 && isset($this->parent->settings['username']) && isset($this->parent->settings['password'])){
@@ -234,7 +236,7 @@ class QuickBaseQuery {
 		}
 
 		foreach($this->options as $key => $value){
-			if(method_exists('QuickBaseOption', $key)){
+			if(method_exists('\QuickBase\QuickBaseOption', $key)){
 				$this->options[$key] = QuickBaseOption::{$key}($value);
 			}
 		}
@@ -302,7 +304,7 @@ class QuickBaseQuery {
 		if($headers['Content-Type'] === 'application/xml'){
 			$this->response = array();
 
-			$xml = new SimpleXmlIterator($body);
+			$xml = new \SimpleXmlIterator($body);
 
 			$this->xml2Arr($xml, $this->response);
 
@@ -316,7 +318,7 @@ class QuickBaseQuery {
 
 	/* Helpers */
 	final public static function arr2Obj(&$arr, $return = false){
-		$obj = new stdClass;
+		$obj = new \stdClass;
 
 		foreach($arr as $key => $val){
 			if(!empty($key)){
@@ -1227,5 +1229,7 @@ class QuickBaseOption {
 	// final public static function withembeddedtables($val){ }
 
 }
+
+} // End QuickBase Namespace
 
 ?>

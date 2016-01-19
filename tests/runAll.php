@@ -58,7 +58,7 @@ if(!getenv('TRAVIS')){
 	putenv('appid='.$argv[6]);
 }
 
-$qb = new QuickBase(array(
+$qb = new \QuickBase\QuickBase(array(
 	'realm' => getenv('realm'),
 	'appToken' => getenv('appToken')
 ));

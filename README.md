@@ -15,7 +15,7 @@ Example
 -------
 ```php
 try {
-	$qb = new QuickBase(array(
+	$qb = new \QuickBase\QuickBase(array(
 		'realm' => 'www',
 		'appToken' => '****'
 	));
@@ -48,7 +48,7 @@ try {
 	));
 
 	var_dump($response['table']['records']);
-}catch(QuickBaseError $err){
+}catch(\QuickBase\QuickBaseError $err){
 	echo '('.$err->getCode().') '.$err->getMessage().'. '.$err->getDetails();
 }
 
@@ -62,11 +62,11 @@ php-quickbase throws exceptions whenever an error is detected. You do not have t
 ```php
 try {
 	// QuickBase API Calls Here
-}catch(QuickBaseError $err){
+}catch(\QuickBase\QuickBaseError $err){
 	echo '('.$err->getCode().') '.$err->getMessage().'. '.$err->getDetails();
 
 	/*
-	 * class QuickBaseError extends Exception {
+	 * class \QuickBase\QuickBaseError extends \Exception {
 	 *
 	 * 	protected int $code;
 	 * 	protected string $message;
