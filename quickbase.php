@@ -180,7 +180,11 @@ class QuickBaseQuery {
 			$this->payload = $xmlDoc->asXML();
 		}else{
 			foreach($this->options as $key => $value){
-				$this->payload .= '&'.$key.'='.urlencode($value);
+				if($key === 'field'){
+					$this->payload .= '&_fid_'.$value['fid'].'='.urlencode($value['value']);
+				}else{
+					$this->payload .= '&'.$key.'='.urlencode($value);
+				}
 			}
 		}
 
