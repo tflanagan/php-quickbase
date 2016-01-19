@@ -43,7 +43,8 @@ class QuickBase {
 			'errdetail' => ''
 		),
 
-		'maxErrorRetryAttempts' => 3
+		'maxErrorRetryAttempts' => 3,
+		'responseAsObject' => false
 	);
 
 	public function __construct($options = array()){
@@ -61,7 +62,12 @@ class QuickBase {
 			->actionRequest()
 			->constructPayload()
 			->transmit()
+			->checkForAndHandleError()
 			->actionResponse();
+
+		if(isset($query->options['responseAsObject']) && $query->options['responseAsObject']){
+			QuickBaseQuery::arr2Obj($query->response);
+		}
 
 		return $query->response;
 	}
@@ -101,6 +107,7 @@ class QuickBaseQuery {
 
 	public $parent;
 	public $action = '';
+	public $settings = array();
 	public $options = array();
 	public $response = array();
 
@@ -150,6 +157,10 @@ class QuickBaseQuery {
 			$this->options['encoding'] = $this->settings['flags']['encoding'];
 		}
 
+		if(!isset($this->options['responseAsObject']) && $this->settings['responseAsObject']){
+			$this->options['responseAsObject'] = $this->settings['responseAsObject'];
+		}
+
 		return $this;
 	}
 
@@ -195,6 +206,12 @@ class QuickBaseQuery {
 						->constructPayload()
 						->transmit();
 				}catch(Exception $newTicketErr){
+					++$this->nErrors;
+
+					if($this->nErrors <= $this->parent->settings['maxErrorRetryAttempts']){
+						return $this->checkForAndHandleError();
+					}
+
 					throw $newTicketErr;
 				}
 			}
@@ -286,8 +303,6 @@ class QuickBaseQuery {
 			$this->xml2Arr($xml, $this->response);
 
 			$this->cleanXml2Arr($this->response);
-
-			$this->checkForAndHandleError();
 		}else{
 			$this->response = $body;
 		}
@@ -296,7 +311,27 @@ class QuickBaseQuery {
 	}
 
 	/* Helpers */
-	final protected static function arr2Xml($arr, &$xml){
+	final public static function arr2Obj(&$arr, $return = false){
+		$obj = new stdClass;
+
+		foreach($arr as $key => $val){
+			if(!empty($key)){
+				if(is_array($val)){
+					$obj->{$key} = self::arr2Obj($val, true);
+				}else{
+					$obj->{$key} = $val;
+				}
+			}
+		}
+
+		if($return){
+			return $obj;
+		}
+
+		$arr = $obj;
+	}
+
+	final public static function arr2Xml($arr, &$xml){
 		if(is_array($arr)){
 			foreach($arr as $key => $value){
 				if($key === '$'){
@@ -336,7 +371,7 @@ class QuickBaseQuery {
 		}
 	}
 
-	final protected static function cleanXml2Arr(&$arr){
+	final public static function cleanXml2Arr(&$arr){
 		if(is_array($arr)){
 			foreach($arr as $key => $value){
 				if(is_array($value) && count($value) === 1){
@@ -377,7 +412,7 @@ class QuickBaseQuery {
 		}
 	}
 
-	final protected static function parseCURLHeaders(&$headers){
+	final public static function parseCURLHeaders(&$headers){
 		$newHeaders = array();
 		$headers = explode("\r\n", $headers);
 
@@ -390,7 +425,7 @@ class QuickBaseQuery {
 		$headers = $newHeaders;
 	}
 
-	final protected static function xml2Arr($xml, &$arr){
+	final public static function xml2Arr($xml, &$arr){
 		for($xml->rewind(); $xml->valid(); $xml->next()){
 			$key = $xml->key();
 
