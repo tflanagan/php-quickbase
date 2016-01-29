@@ -54,6 +54,82 @@ try {
 
 ```
 
+Class
+-----
+```php
+class \QuickBase\QuickBase {
+
+	private $defaults;
+
+	final public api($action[, $options = array()]);
+
+}
+
+class \QuickBase\QuickBaseError extends \Exception {
+
+	protected int $code;
+	protected string $message;
+	protected string $details;
+
+	protected int $line;
+	protected string $file;
+
+	final public getCode(void);
+	final public getMessage(void);
+	final public getDetails(void);
+
+	final public getLine(void);
+	final public getFile(void);
+
+}
+
+class \QuickBase\QuickBaseQuery {
+
+	public QuickBase $parent;
+	public string $action;
+	public array $settings;
+	public array $options;
+	public array $response;
+
+	private int $nErrors;
+
+	protected string $payload;
+
+	final public actionRequest();
+	final public actionResponse();
+	final public addFlags();
+	final public constructPayload();
+	final public checkForAndHandleError();
+	final public processOptions();
+	final public transmit();
+
+	final public static arr2Obj(&$arr[, $return = false]);
+	final public static arr2Xml($arr, &$xml);
+	final public static cleanXml2Arr(&$arr);
+	final public static parseCURLHeaders(&$headers);
+	final public static xml2Arr($xml, &$arr);
+
+}
+
+class \QuickBase\QuickBaseRequest {
+
+	final public static API_[Authenticate, DoQuery, etc](&$query);
+
+}
+
+class \QuickBase\QuickBaseResponse {
+
+	final public static API_[Authenticate, DoQuery, etc](&$query, &$results);
+
+}
+
+class \QuickBase\QuickBaseOption {
+
+	final public static [clist, fields, etc]($val);
+
+}
+```
+
 Error Handling
 --------------
 
