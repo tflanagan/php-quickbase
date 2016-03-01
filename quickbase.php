@@ -49,10 +49,23 @@ class QuickBase {
 		'responseAsObject' => false
 	);
 
+	public $ch;
+
 	public function __construct($options = array()){
 		$this->settings = array_replace_recursive($this->defaults, $options);
 
+		$this->ch = curl_init();
+
+		curl_setopt($this->ch, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($this->ch, CURLOPT_HEADER, true);
+		curl_setopt($this->ch, CURLOPT_FOLLOWLOCATION, true);
+
 		return $this;
+	}
+
+	public function __destruct(){
+		curl_close($this->ch);
 	}
 
 	final public function api($action, $options = array()){
@@ -245,7 +258,7 @@ class QuickBaseQuery {
 	}
 
 	final public function transmit(){
-		$ch = curl_init(implode('', array(
+		curl_setopt($this->parent->ch, CURLOPT_URL, implode('', array(
 			$this->settings['useSSL'] ? 'https://' : 'http://',
 			$this->settings['realm'],
 			'.',
@@ -257,15 +270,11 @@ class QuickBaseQuery {
 			$this->settings['flags']['useXML'] ? '' : $this->payload
 		)));
 
-		curl_setopt($ch, CURLOPT_PORT, $this->settings['useSSL'] ? 443 : 80);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_HEADER, true);
-		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+		curl_setopt($this->parent->ch, CURLOPT_PORT, $this->settings['useSSL'] ? 443 : 80);
 
 		if($this->settings['flags']['useXML']){
-			curl_setopt($ch, CURLOPT_POST, true);
-			curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+			curl_setopt($this->parent->ch, CURLOPT_POST, true);
+			curl_setopt($this->parent->ch, CURLOPT_HTTPHEADER, array(
 				'POST /db/'.(isset($this->options['dbid']) ? $this->options['dbid'] : 'main').' HTTP/1.0',
 				'Content-Type: text/xml;',
 				'Accept: text/xml',
@@ -274,17 +283,19 @@ class QuickBaseQuery {
 				'Content-Length: '.strlen($this->payload),
 				'QUICKBASE-ACTION: '.$this->action
 			));
-			curl_setopt($ch, CURLOPT_POSTFIELDS, $this->payload);
+			curl_setopt($this->parent->ch, CURLOPT_POSTFIELDS, $this->payload);
+		}else{
+			curl_setopt($this->parent->ch, CURLOPT_POST, false);
+			curl_setopt($this->parent->ch, CURLOPT_HTTPHEADER, false);
+			curl_setopt($this->parent->ch, CURLOPT_POSTFIELDS, false);
 		}
 
-		$response = curl_exec($ch);
+		$response = curl_exec($this->parent->ch);
 
-		$errno = curl_errno($ch);
-		$error = curl_error($ch);
+		$errno = curl_errno($this->parent->ch);
+		$error = curl_error($this->parent->ch);
 
-		$headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-
-		curl_close($ch);
+		$headerSize = curl_getinfo($this->parent->ch, CURLINFO_HEADER_SIZE);
 
 		if($response === false){
 			++$this->nErrors;
