@@ -127,10 +127,15 @@ $files = array_diff(scandir(__DIR__), array(
 	'..',
 	'.',
 	'runAll.php',
-	'API_Authenticate.php'
+	'API_Authenticate.php',
+	'benchmark.php'
 ));
 
 array_unshift($files, 'API_Authenticate.php');
+
+$startTime = time();
+
+echo "\nTesting Started: ".$startTime."\n";
 
 foreach($files as $i => $file){
 	if(strpos($file, '.') === 0){
@@ -163,6 +168,13 @@ foreach($files as $i => $file){
 
 		break;
 	}
+}
+
+if(!$error){
+	$endTime = time();
+
+	echo "\n\nTested Finished: ".$endTime;
+	echo "\nTotal Elasped Time: ".($endTime - $startTime).' seconds';
 }
 
 fclose($stderr);
