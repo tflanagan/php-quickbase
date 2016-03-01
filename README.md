@@ -59,6 +59,8 @@ Class
 ```php
 class \QuickBase\QuickBase {
 
+	public cURL $ch;
+
 	private $defaults;
 
 	final public api($action[, $options = array()]);
