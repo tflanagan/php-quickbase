@@ -49,42 +49,95 @@ class QuickBase {
 		'responseAsObject' => false
 	);
 
-	public $ch;
+	public $mch;
+	public $chs;
 
 	public function __construct($options = array()){
 		$this->settings = array_replace_recursive($this->defaults, $options);
 
-		$this->ch = curl_init();
-
-		curl_setopt($this->ch, CURLOPT_SSL_VERIFYPEER, false);
-		curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($this->ch, CURLOPT_HEADER, true);
-		curl_setopt($this->ch, CURLOPT_FOLLOWLOCATION, true);
+		$this->mch = curl_multi_init();
+		$this->chs = array();
 
 		return $this;
 	}
 
 	public function __destruct(){
-		curl_close($this->ch);
-	}
-
-	final public function api($action, $options = array()){
-		$query = new QuickBaseQuery($this, $action, $options);
-
-		$query
-			->addFlags()
-			->processOptions()
-			->actionRequest()
-			->constructPayload()
-			->transmit()
-			->checkForAndHandleError()
-			->actionResponse();
-
-		if(isset($query->options['responseAsObject']) && $query->options['responseAsObject']){
-			QuickBaseQuery::arr2Obj($query->response);
+		for($i = 0, $l = count($this->chs); $i < $l; ++$i){
+			curl_close($this->chs[$i]);
 		}
 
-		return $query->response;
+		curl_multi_close($this->mch);
+	}
+
+	// final public function api($actions = array()){
+	final public function api($action, $options = array()){
+		if(!is_array($action)){
+			$actions = array(
+				array(
+					'action' => $action,
+					'options' => $options
+				)
+			);
+		}else{
+			$actions = $action;
+		}
+
+		$nActions = count($actions);
+		$queries = array();
+		$results = array();
+
+		for($i = 0; $i < $nActions; ++$i){
+			if(!isset($this->chs[$i])){
+				$this->chs[] = self::genCH();
+			}
+
+			$query = new QuickBaseQuery($this, $actions[$i]['action'], $actions[$i]['options']);
+
+			$query
+				->addFlags()
+				->processOptions()
+				->actionRequest()
+				->constructPayload()
+				->prepareCH($this->chs[$i]);
+
+			curl_multi_add_handle($this->mch, $this->chs[$i]);
+
+			$queries[] = $query;
+		}
+
+		do {
+			curl_multi_exec($this->mch, $running);
+			curl_multi_select($this->mch);
+		}while($running > 0);
+
+		for($i = 0; $i < $nActions; ++$i){
+			$queries[$i]
+				->processCH()
+				->checkForAndHandleError()
+				->actionResponse()
+				->finalize();
+
+			$results[] = $queries[$i]->response;
+
+			curl_multi_remove_handle($this->mch, $this->chs[$i]);
+		}
+
+		if($nActions === 1){
+			return $results[0];
+		}
+
+		return $results;
+	}
+
+	final public static function genCH(){
+		$ch = curl_init();
+
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_HEADER, true);
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+
+		return $ch;
 	}
 
 }
@@ -223,7 +276,9 @@ class QuickBaseQuery {
 
 					return $this
 						->constructPayload()
-						->transmit();
+						->prepareCH()
+						->processCH()
+						->checkForAndHandleError();
 				}catch(Exception $newTicketErr){
 					++$this->nErrors;
 
@@ -241,24 +296,16 @@ class QuickBaseQuery {
 		return $this;
 	}
 
-	final public function processOptions(){
-		if(isset($this->options['fields'])){
-			$this->options['field'] = $this->options['fields'];
-
-			unset($this->options['fields']);
-		}
-
-		foreach($this->options as $key => $value){
-			if(method_exists('\QuickBase\QuickBaseOption', $key)){
-				$this->options[$key] = QuickBaseOption::{$key}($value);
-			}
+	final public function finalize(){
+		if(isset($this->options['responseAsObject']) && $this->options['responseAsObject']){
+			QuickBaseQuery::arr2Obj($this->response);
 		}
 
 		return $this;
 	}
 
-	final public function transmit(){
-		curl_setopt($this->parent->ch, CURLOPT_URL, implode('', array(
+	final public function prepareCH(&$ch){
+		curl_setopt($ch, CURLOPT_URL, implode('', array(
 			$this->settings['useSSL'] ? 'https://' : 'http://',
 			$this->settings['realm'],
 			'.',
@@ -270,11 +317,11 @@ class QuickBaseQuery {
 			$this->settings['flags']['useXML'] ? '' : $this->payload
 		)));
 
-		curl_setopt($this->parent->ch, CURLOPT_PORT, $this->settings['useSSL'] ? 443 : 80);
+		curl_setopt($ch, CURLOPT_PORT, $this->settings['useSSL'] ? 443 : 80);
 
 		if($this->settings['flags']['useXML']){
-			curl_setopt($this->parent->ch, CURLOPT_POST, true);
-			curl_setopt($this->parent->ch, CURLOPT_HTTPHEADER, array(
+			curl_setopt($ch, CURLOPT_POST, true);
+			curl_setopt($ch, CURLOPT_HTTPHEADER, array(
 				'POST /db/'.(isset($this->options['dbid']) ? $this->options['dbid'] : 'main').' HTTP/1.0',
 				'Content-Type: text/xml;',
 				'Accept: text/xml',
@@ -283,25 +330,31 @@ class QuickBaseQuery {
 				'Content-Length: '.strlen($this->payload),
 				'QUICKBASE-ACTION: '.$this->action
 			));
-			curl_setopt($this->parent->ch, CURLOPT_POSTFIELDS, $this->payload);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $this->payload);
 		}else{
-			curl_setopt($this->parent->ch, CURLOPT_POST, false);
-			curl_setopt($this->parent->ch, CURLOPT_HTTPHEADER, false);
-			curl_setopt($this->parent->ch, CURLOPT_POSTFIELDS, false);
+			curl_setopt($ch, CURLOPT_POST, false);
+			curl_setopt($ch, CURLOPT_HTTPHEADER, false);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, false);
 		}
 
-		$response = curl_exec($this->parent->ch);
+		$this->ch = $ch;
 
-		$errno = curl_errno($this->parent->ch);
-		$error = curl_error($this->parent->ch);
+		return $this;
+	}
 
-		$headerSize = curl_getinfo($this->parent->ch, CURLINFO_HEADER_SIZE);
+	final public function processCH(){
+		$response = curl_multi_getcontent($this->ch);
+
+		$errno = curl_errno($this->ch);
+		$error = curl_error($this->ch);
+
+		$headerSize = curl_getinfo($this->ch, CURLINFO_HEADER_SIZE);
 
 		if($response === false){
 			++$this->nErrors;
 
 			if($this->nErrors <= $this->settings['maxErrorRetryAttempts']){
-				return $this->transmit();
+				return $this->prepareCH()->processCH();
 			}
 
 			throw new QuickBaseError($errno, $error);
@@ -322,6 +375,22 @@ class QuickBaseQuery {
 			$this->cleanXml2Arr($this->response);
 		}else{
 			$this->response = $body;
+		}
+
+		return $this;
+	}
+
+	final public function processOptions(){
+		if(isset($this->options['fields'])){
+			$this->options['field'] = $this->options['fields'];
+
+			unset($this->options['fields']);
+		}
+
+		foreach($this->options as $key => $value){
+			if(method_exists('\QuickBase\QuickBaseOption', $key)){
+				$this->options[$key] = QuickBaseOption::{$key}($value);
+			}
 		}
 
 		return $this;
