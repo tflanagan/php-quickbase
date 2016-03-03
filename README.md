@@ -41,13 +41,27 @@ try {
 		));
 	}
 
-	$response = $qb->api('API_DoQuery', array(
-		'dbid' => '*****',
-		'clist' => '3.12',
-		'options' => 'num-5'
+	$results = $qb->api(array(
+		array(
+			'action' => 'API_DoQuery',
+			'options' => array(
+				'dbid' => '*****',
+				'clist' => '3.12',
+				'options' => 'num-5'
+			)
+		),
+		array(
+			'action' => 'API_DoQuery',
+			'options' => array(
+				'dbid' => '*****',
+				'clist' => '3.12',
+				'options' => 'num-5'
+			)
+		)
 	));
 
-	var_dump($response['table']['records']);
+	var_dump($results[0]); // First DoQuery
+	var_dump($results[1]); // Second DoQuery
 }catch(\QuickBase\QuickBaseError $err){
 	echo '('.$err->getCode().') '.$err->getMessage().'. '.$err->getDetails();
 }
@@ -59,11 +73,15 @@ Class
 ```php
 class \QuickBase\QuickBase {
 
-	public cURL $ch;
+	public cURL multi $mch;
+	public array $chs;
 
 	private $defaults;
 
 	final public api($action[, $options = array()]);
+	final public api($actions = array());
+
+	final public static genCH();
 
 }
 
@@ -102,8 +120,10 @@ class \QuickBase\QuickBaseQuery {
 	final public addFlags();
 	final public constructPayload();
 	final public checkForAndHandleError();
+	final public finalize();
+	final public prepareCH();
+	final public processCH();
 	final public processOptions();
-	final public transmit();
 
 	final public static arr2Obj(&$arr[, $return = false]);
 	final public static arr2Xml($arr, &$xml);
