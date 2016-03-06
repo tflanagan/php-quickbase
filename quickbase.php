@@ -305,6 +305,10 @@ class QuickBaseQuery {
 	}
 
 	final public function prepareCH(&$ch){
+		if(isset($this->ch) && !$ch){
+			$ch = $this->ch;
+		}
+
 		curl_setopt($ch, CURLOPT_URL, implode('', array(
 			$this->settings['useSSL'] ? 'https://' : 'http://',
 			$this->settings['realm'],
