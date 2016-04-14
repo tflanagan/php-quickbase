@@ -111,15 +111,21 @@ class QuickBase {
 		}while($running > 0);
 
 		for($i = 0; $i < $nActions; ++$i){
-			$queries[$i]
-				->processCH()
-				->checkForAndHandleError()
-				->actionResponse()
-				->finalize();
+			try {
+				$queries[$i]
+					->processCH()
+					->checkForAndHandleError()
+					->actionResponse()
+					->finalize();
 
-			$results[] = $queries[$i]->response;
+				$results[] = $queries[$i]->response;
 
-			curl_multi_remove_handle($this->mch, $this->chs[$i]);
+				curl_multi_remove_handle($this->mch, $this->chs[$i]);
+			}catch(\Exception $err){
+				curl_multi_remove_handle($this->mch, $this->chs[$i]);
+
+				throw $err;
+			}
 		}
 
 		if($nActions === 1){
@@ -354,7 +360,7 @@ class QuickBaseQuery {
 
 		$headerSize = curl_getinfo($this->ch, CURLINFO_HEADER_SIZE);
 
-		if($response === false){
+		if($response === false || $response === ''){
 			++$this->nErrors;
 
 			if($this->nErrors <= $this->settings['maxErrorRetryAttempts']){
