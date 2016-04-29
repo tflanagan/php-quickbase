@@ -5,6 +5,8 @@ php-quickbase
 
 A lightweight, very flexible QuickBase API
 
+[JavaScript (Node.js + Browser) Version](https://github.com/tflanagan/node-quickbase)
+
 Install
 -------
 ```
