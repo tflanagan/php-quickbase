@@ -46,6 +46,8 @@ class QuickBase {
 		),
 
 		'maxErrorRetryAttempts' => 3,
+		'responseAsXml' => true,
+		'responseAsArray' => false,
 		'responseAsObject' => false
 	);
 
@@ -235,6 +237,10 @@ class QuickBaseQuery {
 			$this->options['responseAsObject'] = $this->settings['responseAsObject'];
 		}
 
+		if(!isset($this->options['responseAsXml']) && $this->settings['responseAsXml']){
+			$this->options['responseAsXml'] = $this->settings['responseAsXml'];
+		}
+
 		return $this;
 	}
 
@@ -375,14 +381,18 @@ class QuickBaseQuery {
 
 		self::parseCURLHeaders($headers);
 
-		if($headers['Content-Type'] === 'application/xml'){
-			$this->response = array();
+		if($headers['Content-Type'] === 'application/xml') {
+			if (isset($this->options['responseAsXml']) && $this->options['responseAsXml']) {
+				$this->response = $body;
+			} else {
+				$this->response = array();
 
-			$xml = new \SimpleXmlIterator($body);
+				$xml = new \SimpleXmlIterator($body);
 
-			$this->xml2Arr($xml, $this->response);
+				$this->xml2Arr($xml, $this->response);
 
-			$this->cleanXml2Arr($this->response);
+				$this->cleanXml2Arr($this->response);
+			}
 		}else{
 			$this->response = $body;
 		}
