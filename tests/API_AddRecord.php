@@ -31,6 +31,62 @@ if(!objStrctMatch($actual, $expected)){
 	throw new Exception('Mismatched API_AddRecord Data Structure');
 }
 
+$rid = $actual['rid'];
+
+$expected = array(
+	'action' => 'API_GetRecordInfo',
+	'errcode' => 0,
+	'errtext' => 'No error',
+	'rid' => 0,
+	'num_fields' => 0,
+	'update_id' => 0,
+	'field' => array(
+		array(
+			'fid' => 0,
+			'name' => '',
+			'type' => '',
+			'value' => 0,
+			'printable' => ''
+		),
+		array(
+			'fid' => 0,
+			'name' => '',
+			'type' => '',
+			'value' => 0,
+			'printable' => ''
+		),
+		array(
+			'fid' => 0,
+			'name' => '',
+			'type' => '',
+			'value' => 0
+		),
+		array(
+			'fid' => 0,
+			'name' => '',
+			'type' => '',
+			'value' => '',
+			'printable' => ''
+		),
+		array(
+			'fid' => 0,
+			'name' => '',
+			'type' => '',
+			'value' => '',
+			'printable' => ''
+		)
+	)
+);
+
+$actual = $qb->api('API_GetRecordInfo', array(
+	'dbid' => getenv('dbid'),
+	'rid' => $rid
+));
+
+if(!objStrctMatch($actual, $expected)){
+	throw new Exception('Mismatched API_GetRecordInfo Data Structure');
+}
+
 $expected = array(
 	'action' => 'API_DeleteRecord',
 	'errcode' => 0,
@@ -40,7 +96,7 @@ $expected = array(
 
 $actual = $qb->api('API_DeleteRecord', array(
 	'dbid' => getenv('dbid'),
-	'rid' => $actual['rid']
+	'rid' => $rid
 ));
 
 if(!objStrctMatch($actual, $expected)){
