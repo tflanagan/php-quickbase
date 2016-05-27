@@ -23,6 +23,7 @@ $expected = array(
 	'date_format' => '',
 	'table' => array(
 		'name' => '',
+		'desc' => '',
 		'original' => array(
 			'table_id' => '',
 			'app_id' => '',
@@ -183,7 +184,6 @@ $actual = $qb->api('API_GetSchema', array(
 ));
 
 if(!objStrctMatch($actual, $expected)){
-	var_dump($actual, $expected);
 	throw new Exception('Mismatched API_GetSchema Data Structure');
 }
 

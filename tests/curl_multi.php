@@ -23,6 +23,7 @@ $expectedFMT = array(
 	'qname' => '',
 	'table' => array(
 		'name' => '',
+		'desc' => '',
 		'original' => array(
 			'table_id' => '',
 			'app_id' => '',

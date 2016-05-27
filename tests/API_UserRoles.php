@@ -28,17 +28,18 @@ $expected = array(
 			'lastName' => '',
 			'roles' => array(
 				array(
-					'id' => 0,
 					'name' => '',
 					'access' => array(
-						'id' => 0,
-						'name' => ''
-					)
+						'name' => '',
+						'id' => 0
+					),
+					'id' => 0
 				)
 			),
 			'type' => '',
 			'id' => ''
-		), array(
+		),
+		array(
 			'name' => '',
 			'lastAccess' => 0,
 			'lastAccessAppLocal' => '',
@@ -46,12 +47,69 @@ $expected = array(
 			'lastName' => '',
 			'roles' => array(
 				array(
-					'id' => 0,
 					'name' => '',
 					'access' => array(
-						'id' => 0,
-						'name' => ''
-					)
+						'name' => '',
+						'id' => 0
+					),
+					'id' => 0
+				)
+			),
+			'type' => '',
+			'id' => ''
+		),
+		array(
+			'name' => '',
+			'lastAccess' => 0,
+			'lastAccessAppLocal' => '',
+			'firstName' => '',
+			'lastName' => '',
+			'roles' => array(
+				array(
+					'name' => '',
+					'access' => array(
+						'name' => '',
+						'id' => 0
+					),
+					'id' => 0
+				)
+			),
+			'type' => '',
+			'id' => ''
+		),
+		array(
+			'name' => '',
+			'lastAccess' => 0,
+			'lastAccessAppLocal' => '',
+			'firstName' => '',
+			'lastName' => '',
+			'roles' => array(
+				array(
+					'name' => '',
+					'access' => array(
+						'name' => '',
+						'id' => 0
+					),
+					'id' => 0
+				)
+			),
+			'type' => '',
+			'id' => ''
+		),
+		array(
+			'name' => '',
+			'lastAccess' => 0,
+			'lastAccessAppLocal' => '',
+			'firstName' => '',
+			'lastName' => '',
+			'roles' => array(
+				array(
+					'name' => '',
+					'access' => array(
+						'name' => '',
+						'id' => 0
+					),
+					'id' => 0
 				)
 			),
 			'type' => '',

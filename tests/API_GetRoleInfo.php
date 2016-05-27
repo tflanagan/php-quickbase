@@ -27,14 +27,24 @@ $expected = array(
 				'id' => 0,
 				'name' => ''
 			)
-		), array(
+		), 
+		array(
 			'id' => 0,
 			'name' => '',
 			'access' => array(
 				'id' => 0,
 				'name' => ''
 			)
-		), array(
+		),
+		array(
+			'id' => 0,
+			'name' => '',
+			'access' => array(
+				'id' => 0,
+				'name' => ''
+			)
+		),
+		array(
 			'id' => 0,
 			'name' => '',
 			'access' => array(
