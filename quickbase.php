@@ -27,6 +27,7 @@ class QuickBase {
 		'username' => '',
 		'password' => '',
 		'appToken' => '',
+		'userToken' => '',
 		'ticket' => '',
 
 		'flags' => array(
@@ -221,6 +222,10 @@ class QuickBaseQuery {
 
 		if(!isset($this->options['appToken']) && $this->settings['appToken']){
 			$this->options['appToken'] = $this->settings['appToken'];
+		}
+
+		if(!isset($this->options['userToken']) && $this->settings['userToken']){
+			$this->options['usertoken'] = $this->settings['userToken'];
 		}
 
 		if(!isset($this->options['ticket']) && $this->settings['ticket']){
@@ -912,6 +917,7 @@ class QuickBaseOption {
 
 	/* Common to All */
 	// final public static function apptoken($val){ }
+	// final public static function usertoken($val){ }
 	// final public static function dbid($val){ }
 	// final public static function ticket($val){ }
 	// final public static function udata($val){ }
