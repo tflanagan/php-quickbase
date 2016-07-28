@@ -19,8 +19,11 @@ Example
 try {
 	$qb = new \QuickBase\QuickBase(array(
 		'realm' => 'www',
-		'appToken' => '****'
+		'appToken' => '****',
+		// 'userToken' => '****'
 	));
+
+	// If using user tokens, you do not need to call API_Authenticate
 
 	$qb->api('API_Authenticate', array(
 		'username' => '****',
