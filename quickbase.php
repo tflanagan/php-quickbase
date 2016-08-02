@@ -496,7 +496,7 @@ class QuickBaseQuery {
 					self::cleanXml2Arr($arr[$key]);
 				}
 
-				if(is_numeric($arr[$key]) && strlen($arr[$key]) > 1 && substr($arr[$key], 0, 1) === '0'){
+				if(is_numeric($arr[$key]) && strlen($arr[$key]) > 1 && substr($arr[$key], 0, 1) !== '0'){
 					$arr[$key] = (double) $arr[$key];
 				}else
 				if(is_string($arr[$key])){
