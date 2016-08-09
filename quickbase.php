@@ -50,6 +50,7 @@ class QuickBase {
 		'responseAsObject' => false
 	);
 
+	public $debug = false;
 	public $mch;
 	public $chs;
 
@@ -102,6 +103,10 @@ class QuickBase {
 				->prepareCH($this->chs[$i]);
 
 			curl_multi_add_handle($this->mch, $this->chs[$i]);
+
+			if($this->debug){
+				var_dump('Executing QB Query', $query->getPayload());
+			}
 
 			$queries[] = $query;
 		}
@@ -313,6 +318,10 @@ class QuickBaseQuery {
 		}
 
 		return $this;
+	}
+
+	final public function getPayload(){
+		return $this->payload;
 	}
 
 	final public function prepareCH(&$ch){
