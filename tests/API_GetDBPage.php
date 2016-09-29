@@ -24,7 +24,7 @@ $expected = array(
 
 $actual = $qb->api('API_GetDBPage', array(
 	'dbid' => getenv('appid'),
-	'pageID' => 2
+	'pageID' => 9
 ));
 
 if(!objStrctMatch($actual, $expected)){

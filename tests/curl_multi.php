@@ -33,7 +33,10 @@ $expectedFMT = array(
 			'next_field_id' => 0,
 			'next_query_id' => 0,
 			'def_sort_fid' => 0,
-			'def_sort_order' => 0
+			'def_sort_order' => 0,
+			'key_fid' => 0,
+			'single_record_name' => '',
+			'plural_record_name' => ''
 		),
 		'variables' => array(
 			'test' => 'test'
@@ -41,13 +44,13 @@ $expectedFMT = array(
 		'queries' => array(
 			array(
 				'id' => 1,
-				'qycalst' => 0,
+				'qycalst' => '',
 				'qyopts' => 'nos.',
 				'qytype' => 'table',
 				'qyname' => 'List All'
 			), array(
 				'id' => 2,
-				'qycalst' => 0,
+				'qycalst' => '',
 				'qyopts' => 'so-D.onlynew.nos.',
 				'qytype' => 'table',
 				'qyname' => 'List Changes',

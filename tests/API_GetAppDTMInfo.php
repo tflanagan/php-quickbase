@@ -31,16 +31,6 @@ $expected = array(
 			'lastModifiedTime' => 0,
 			'lastRecModTime' => 0,
 			'id' => ''
-		),
-		array(
-			'lastModifiedTime' => 0,
-			'lastRecModTime' => 0,
-			'id' => ''
-		),
-		array(
-			'lastModifiedTime' => 0,
-			'lastRecModTime' => 0,
-			'id' => ''
 		)
 	)
 );

@@ -25,7 +25,7 @@ $expected = array(
 
 /* Main */
 $actual = $qb->api('API_FindDBByName', array(
-	'dbname' => 'Tristian\'s Application'
+	'dbname' => 'QuickBase Lib Test Application'
 ));
 
 if(!objStrctMatch($actual, $expected)){

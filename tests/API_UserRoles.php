@@ -57,63 +57,6 @@ $expected = array(
 			),
 			'type' => '',
 			'id' => ''
-		),
-		array(
-			'name' => '',
-			'lastAccess' => 0,
-			'lastAccessAppLocal' => '',
-			'firstName' => '',
-			'lastName' => '',
-			'roles' => array(
-				array(
-					'name' => '',
-					'access' => array(
-						'name' => '',
-						'id' => 0
-					),
-					'id' => 0
-				)
-			),
-			'type' => '',
-			'id' => ''
-		),
-		array(
-			'name' => '',
-			'lastAccess' => 0,
-			'lastAccessAppLocal' => '',
-			'firstName' => '',
-			'lastName' => '',
-			'roles' => array(
-				array(
-					'name' => '',
-					'access' => array(
-						'name' => '',
-						'id' => 0
-					),
-					'id' => 0
-				)
-			),
-			'type' => '',
-			'id' => ''
-		),
-		array(
-			'name' => '',
-			'lastAccess' => 0,
-			'lastAccessAppLocal' => '',
-			'firstName' => '',
-			'lastName' => '',
-			'roles' => array(
-				array(
-					'name' => '',
-					'access' => array(
-						'name' => '',
-						'id' => 0
-					),
-					'id' => 0
-				)
-			),
-			'type' => '',
-			'id' => ''
 		)
 	)
 );

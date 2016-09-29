@@ -888,7 +888,35 @@ class QuickBaseResponse {
 
 	// final public static function API_GrantedDBsForGroup(&$query, &$results){ }
 	// final public static function API_GrantedGroups(&$query, &$results){ }
-	// final public static function API_ImportFromCSV(&$query, &$results){ }
+
+	final public static function API_ImportFromCSV(&$query, &$results){
+		if(isset($results['rids'])){
+			if(isset($results['rids']['fields'])){
+				$results['rids'] = array_map(function($record){
+					foreach($record['field'] as $field){
+						$record[$field['id']] = $field['_'];
+					}
+
+					unset($record['field']);
+
+					return $record;
+				}, $results['rids']['fields']);
+			}else{
+				$results['rids'] = array_map(function($record){
+					$ret = array(
+						'rid' => $record['_']
+					);
+
+					if(isset($record['update_id'])){
+						$ret['update_id'] = $record['update_id'];
+					}
+
+					return $ret;
+				}, $results['rids']);
+			}
+		}
+	}
+
 	// final public static function API_ProvisionUser(&$query, &$results){ }
 	// final public static function API_PurgeRecords(&$query, &$results){ }
 	// final public static function API_RemoveGroupFromRole(&$query, &$results){ }
