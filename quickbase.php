@@ -716,6 +716,16 @@ class QuickBaseResponse {
 
 	final public static function API_DoQuery(&$query, &$results){
 		if(isset($query->options['fmt']) && $query->options['fmt'] === 'structured'){
+			// QuickBase Support Case #480141
+			if(isset($results['table']['queries'])){
+				for($i = 0, $i < count($results['table']['queries']); $i < $l; ++$i){
+					if(isset($results['table']['queries'][$i]['qydesc']) && is_array($results['table']['queries'][$i]['qydesc'])){
+						$results['table']['queries'][$i]['qydesc'] = $results['table']['queries'][$i]['qydesc']['_'];
+					}
+				}
+			}
+			// End Quickbase Support Case #480141
+
 			if(isset($results['table']['records'])){
 				if(!is_array($results['table']['records']) && $results['table']['records'] === ''){
 					$results['table']['records'] = array();
@@ -832,6 +842,16 @@ class QuickBaseResponse {
 	// final public static function API_GetNumRecords(&$query, &$results){ }
 
 	final public static function API_GetSchema(&$query, &$results){
+		// QuickBase Support Case #480141
+		if(isset($results['table']['queries'])){
+			for($i = 0, $i < count($results['table']['queries']); $i < $l; ++$i){
+				if(isset($results['table']['queries'][$i]['qydesc']) && is_array($results['table']['queries'][$i]['qydesc'])){
+					$results['table']['queries'][$i]['qydesc'] = $results['table']['queries'][$i]['qydesc']['_'];
+				}
+			}
+		}
+		// End Quickbase Support Case #480141
+
 		if(isset($results['table']['chdbids'])){
 			if(isset($results['table']['chdbids']['_'])){
 				$results['table']['chdbids'] = array( $results['table']['chdbids'] );
