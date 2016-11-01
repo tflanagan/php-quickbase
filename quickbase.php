@@ -718,7 +718,7 @@ class QuickBaseResponse {
 		if(isset($query->options['fmt']) && $query->options['fmt'] === 'structured'){
 			// QuickBase Support Case #480141
 			if(isset($results['table']['queries'])){
-				for($i = 0, $i < count($results['table']['queries']); $i < $l; ++$i){
+				for($i = 0, $l = count($results['table']['queries']); $i < $l; ++$i){
 					if(isset($results['table']['queries'][$i]['qydesc']) && is_array($results['table']['queries'][$i]['qydesc'])){
 						$results['table']['queries'][$i]['qydesc'] = $results['table']['queries'][$i]['qydesc']['_'];
 					}
@@ -844,7 +844,7 @@ class QuickBaseResponse {
 	final public static function API_GetSchema(&$query, &$results){
 		// QuickBase Support Case #480141
 		if(isset($results['table']['queries'])){
-			for($i = 0, $i < count($results['table']['queries']); $i < $l; ++$i){
+			for($i = 0, $l = count($results['table']['queries']); $i < $l; ++$i){
 				if(isset($results['table']['queries'][$i]['qydesc']) && is_array($results['table']['queries'][$i]['qydesc'])){
 					$results['table']['queries'][$i]['qydesc'] = $results['table']['queries'][$i]['qydesc']['_'];
 				}
