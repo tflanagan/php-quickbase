@@ -19,6 +19,10 @@ namespace QuickBase {
 
 class QuickBase {
 
+	const VERSION_MAJOR = 2;
+	const VERSION_MINOR = 0;
+	const VERSION_PATCH = 3;
+
 	private $defaults = array(
 		'realm' => 'www',
 		'domain' => 'quickbase.com',
@@ -306,7 +310,7 @@ class QuickBaseQuery {
 				}
 			}
 
-			throw new QuickBaseError($this->response['errcode'], $this->response['errtext'], $this->response['errdetail']);
+			throw new QuickBaseError($this->response['errcode'], $this->response['errtext'], isset($this->response['errdetail']) ? $this->response['errdetail'] : '');
 		}
 
 		return $this;
