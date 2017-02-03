@@ -21,7 +21,7 @@ class QuickBase {
 
 	const VERSION_MAJOR = 2;
 	const VERSION_MINOR = 0;
-	const VERSION_PATCH = 3;
+	const VERSION_PATCH = 4;
 
 	private $defaults = array(
 		'realm' => 'www',
@@ -506,7 +506,11 @@ class QuickBaseQuery {
 				}
 
 				if(is_array($arr[$key])){
-					self::cleanXml2Arr($arr[$key]);
+					if(isset($arr[$key]['_']) && isset($arr[$key]['BR']) && count($arr[$key])){
+						$arr[$key] = $arr[$key]['_'];
+					}else{
+						self::cleanXml2Arr($arr[$key]);
+					}
 				}
 
 				if(is_numeric($arr[$key]) && (substr($arr[$key], 0, 1) !== '0' || $arr[$key] === '0')){
