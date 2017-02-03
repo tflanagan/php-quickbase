@@ -21,7 +21,7 @@ class QuickBase {
 
 	const VERSION_MAJOR = 2;
 	const VERSION_MINOR = 0;
-	const VERSION_PATCH = 5;
+	const VERSION_PATCH = 6;
 
 	private $defaults = array(
 		'realm' => 'www',
@@ -759,7 +759,7 @@ class QuickBaseResponse {
 								'url' => $field['url']
 							);
 						}else{
-							$value = $field;
+							$value = $field['_'];
 						}
 
 						$newRecord[$field['id']] = $value;
