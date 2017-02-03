@@ -21,7 +21,7 @@ class QuickBase {
 
 	const VERSION_MAJOR = 2;
 	const VERSION_MINOR = 0;
-	const VERSION_PATCH = 4;
+	const VERSION_PATCH = 5;
 
 	private $defaults = array(
 		'realm' => 'www',
@@ -506,7 +506,7 @@ class QuickBaseQuery {
 				}
 
 				if(is_array($arr[$key])){
-					if(isset($arr[$key]['_']) && isset($arr[$key]['BR']) && count($arr[$key])){
+					if(isset($arr[$key]['_']) && isset($arr[$key]['BR']) && count($arr[$key]) === 2){
 						$arr[$key] = $arr[$key]['_'];
 					}else{
 						self::cleanXml2Arr($arr[$key]);
@@ -759,7 +759,7 @@ class QuickBaseResponse {
 								'url' => $field['url']
 							);
 						}else{
-							$value = $field['_'];
+							$value = $field;
 						}
 
 						$newRecord[$field['id']] = $value;
