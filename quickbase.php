@@ -21,7 +21,7 @@ class QuickBase {
 
 	const VERSION_MAJOR = 2;
 	const VERSION_MINOR = 0;
-	const VERSION_PATCH = 6;
+	const VERSION_PATCH = 7;
 
 	private $defaults = array(
 		'realm' => 'www',
@@ -328,9 +328,13 @@ class QuickBaseQuery {
 		return $this->payload;
 	}
 
-	final public function prepareCH(&$ch){
-		if(isset($this->ch) && !$ch){
+	final public function prepareCH(&$ch = false){
+		if(isset($this->ch) && $ch === false){
 			$ch = $this->ch;
+		}
+
+		if($ch === false){
+			throw new QuickBaseError(1001, 'Unknown curl handler');
 		}
 
 		curl_setopt($ch, CURLOPT_URL, implode('', array(
