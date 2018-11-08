@@ -397,7 +397,7 @@ class QuickBaseQuery {
 
 		self::parseCURLHeaders($headers);
 
-		if($headers['Content-Type'] === 'application/xml'){
+		if($headers['content-type'] === 'application/xml'){
 			$this->response = array();
 
 			$xml = new \SimpleXmlIterator($body);
@@ -541,7 +541,7 @@ class QuickBaseQuery {
 		foreach($headers as $header){
 			$i = strpos($header, ':');
 
-			$newHeaders[substr($header, 0, $i)] = substr($header, $i + 2);
+			$newHeaders[strtolower(substr($header, 0, $i))] = substr($header, $i + 2);
 		}
 
 		$headers = $newHeaders;
