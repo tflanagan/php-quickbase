@@ -397,7 +397,7 @@ class QuickBaseQuery {
 
 		self::parseCURLHeaders($headers);
 
-		if($headers['content-type'] === 'application/xml'){
+        if(isset($headers['content-type']) && $headers['content-type'] === 'application/xml'){
 			$this->response = array();
 
 			$xml = new \SimpleXmlIterator($body);
