@@ -20,8 +20,8 @@ namespace QuickBase {
 class QuickBase {
 
 	const VERSION_MAJOR = 2;
-	const VERSION_MINOR = 0;
-	const VERSION_PATCH = 9;
+	const VERSION_MINOR = 1;
+	const VERSION_PATCH = 0;
 
 	private $defaults = array(
 		'realm' => 'www',
@@ -852,6 +852,11 @@ class QuickBaseResponse {
 	// final public static function API_GetDBVar(&$query, &$results){ }
 	// final public static function API_GetGroupRole(&$query, &$results){ }
 	// final public static function API_GetNumRecords(&$query, &$results){ }
+
+	final public static function API_GetOneTimeTicket(&$query, &$results){
+		$query->parent->settings['ticket'] = $results['ticket'];
+		$query->settings['ticket'] = $results['ticket'];
+	}
 
 	final public static function API_GetSchema(&$query, &$results){
 		// QuickBase Support Case #480141
