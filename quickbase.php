@@ -76,7 +76,7 @@ class QuickBase {
 	}
 
 	// final public function api($actions = array()){
-	final public function api($action, $options = array()){
+	public function api($action, $options = array()){
 		if(!is_array($action)){
 			$actions = array(
 				array(
@@ -145,7 +145,7 @@ class QuickBase {
 		return $results;
 	}
 
-	final public static function genCH(){
+	public static function genCH(){
 		$ch = curl_init();
 
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
@@ -224,7 +224,7 @@ class QuickBaseQuery {
 		return $this;
 	}
 
-	final public function addFlags(){
+	public function addFlags(){
 		if(!isset($this->options['msInUTC']) && $this->settings['flags']['msInUTC']){
 			$this->options['msInUTC'] = 1;
 		}
@@ -279,7 +279,7 @@ class QuickBaseQuery {
 		return $this;
 	}
 
-	final public function checkForAndHandleError(){
+	public function checkForAndHandleError(){
 		if(isset($this->response['errcode']) && $this->response['errcode'] != $this->settings['status']['errcode']){
 			++$this->nErrors;
 
@@ -316,7 +316,8 @@ class QuickBaseQuery {
 		return $this;
 	}
 
-	final public function finalize(){
+	
+	public function finalize(){
 		if(isset($this->options['responseAsObject']) && $this->options['responseAsObject']){
 			QuickBaseQuery::arr2Obj($this->response);
 		}
@@ -324,11 +325,11 @@ class QuickBaseQuery {
 		return $this;
 	}
 
-	final public function getPayload(){
+	public function getPayload(){
 		return $this->payload;
 	}
 
-	final public function prepareCH(&$ch = false){
+	public function prepareCH(&$ch = false){
 		if(isset($this->ch) && $ch === false){
 			$ch = $this->ch;
 		}
@@ -374,7 +375,7 @@ class QuickBaseQuery {
 		return $this;
 	}
 
-	final public function processCH(){
+	public function processCH(){
 		$response = curl_multi_getcontent($this->ch);
 
 		$errno = curl_errno($this->ch);
@@ -412,7 +413,7 @@ class QuickBaseQuery {
 		return $this;
 	}
 
-	final public function processOptions(){
+	public function processOptions(){
 		if(isset($this->options['fields'])){
 			$this->options['field'] = $this->options['fields'];
 
@@ -429,7 +430,7 @@ class QuickBaseQuery {
 	}
 
 	/* Helpers */
-	final public static function arr2Obj(&$arr, $return = false){
+	public static function arr2Obj(&$arr, $return = false){
 		$obj = new \stdClass;
 
 		foreach($arr as $key => $val){
@@ -449,7 +450,7 @@ class QuickBaseQuery {
 		$arr = $obj;
 	}
 
-	final public static function arr2Xml($arr, &$xml){
+	public static function arr2Xml($arr, &$xml){
 		if(is_array($arr)){
 			foreach($arr as $key => $value){
 				if($key === '$'){
@@ -489,7 +490,7 @@ class QuickBaseQuery {
 		}
 	}
 
-	final public static function cleanXml2Arr(&$arr){
+	 public static function cleanXml2Arr(&$arr){
 		if(is_array($arr)){
 			foreach($arr as $key => $value){
 				if(is_array($value) && count($value) === 1){
@@ -534,7 +535,7 @@ class QuickBaseQuery {
 		}
 	}
 
-	final public static function parseCURLHeaders(&$headers){
+	public static function parseCURLHeaders(&$headers){
 		$newHeaders = array();
 		$headers = explode("\r\n", $headers);
 
@@ -547,7 +548,7 @@ class QuickBaseQuery {
 		$headers = $newHeaders;
 	}
 
-	final public static function xml2Arr($xml, &$arr){
+	public static function xml2Arr($xml, &$arr){
 		for($xml->rewind(); $xml->valid(); $xml->next()){
 			$key = $xml->key();
 
@@ -604,7 +605,7 @@ class QuickBaseRequest {
 	// final public static function API_AddUserToGroup(&$query){ }
 	// final public static function API_AddUserToRole(&$query){ }
 
-	final public static function API_Authenticate(&$query){
+	public static function API_Authenticate(&$query){
 		// API_Authenticate can only happen over SSL
 		$query->settings['useSSL'] = true;
 	}
@@ -624,7 +625,7 @@ class QuickBaseRequest {
 	// final public static function API_DeleteGroup(&$query){ }
 	// final public static function API_DeleteRecord(&$query){ }
 
-	final public static function API_DoQuery(&$query){
+	public static function API_DoQuery(&$query){
 		if(!isset($query->options['returnPercentage']) && isset($query->settings['flags']['returnPercentage'])){
 			$query->options['returnPercentage'] = $query->settings['flags']['returnPercentage'];
 		}
@@ -647,7 +648,7 @@ class QuickBaseRequest {
 	// final public static function API_GenResultsTable(&$query){ }
 	// final public static function API_GetAncestorInfo(&$query){ }
 
-	final public static function API_GetAppDTMInfo(&$query){
+	public static function API_GetAppDTMInfo(&$query){
 		$query->settings['flags']['dbidAsParam'] = true;
 	}
 
@@ -700,7 +701,7 @@ class QuickBaseResponse {
 	// final public static function API_AddUserToGroup(&$query, &$results){ }
 	// final public static function API_AddUserToRole(&$query, &$results){ }
 
-	final public static function API_Authenticate(&$query, &$results){
+	 public static function API_Authenticate(&$query, &$results){
 		$query->parent->settings['ticket'] = $results['ticket'];
 		$query->settings['ticket'] = $results['ticket'];
 
@@ -726,7 +727,7 @@ class QuickBaseResponse {
 	// final public static function API_DeleteGroup(&$query, &$results){ }
 	// final public static function API_DeleteRecord(&$query, &$results){ }
 
-	final public static function API_DoQuery(&$query, &$results){
+	public static function API_DoQuery(&$query, &$results){
 		if(isset($query->options['fmt']) && $query->options['fmt'] === 'structured'){
 			// QuickBase Support Case #480141
 			if(isset($results['table']['queries'])){
