@@ -519,7 +519,11 @@ class QuickBaseQuery {
 				}
 
 				if(is_numeric($arr[$key]) && (substr($arr[$key], 0, 1) !== '0' || $arr[$key] === '0')){
-					if (is_float($arr[$key])) $arr[$key] = (double) $arr[$key];
+					if (is_float($arr[$key])) {
+						$arr[$key] = (double) $arr[$key];
+					} else {
+						$arr[$key] = (int) $arr[$key];
+					}
 				}else
 				if(is_string($arr[$key])){
 					if(strtolower($arr[$key]) === 'true'){
