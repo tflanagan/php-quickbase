@@ -21,7 +21,7 @@ class QuickBase {
 
 	const VERSION_MAJOR = 2;
 	const VERSION_MINOR = 1;
-	const VERSION_PATCH = 0;
+	const VERSION_PATCH = 1;
 
 	private $defaults = array(
 		'realm' => 'www',
